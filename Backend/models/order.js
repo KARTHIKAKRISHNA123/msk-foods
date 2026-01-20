@@ -95,6 +95,19 @@ const orderSchema = mongoose.Schema({
     },
     deliveredAt: {
         type: Date
+    },
+    orderStatus: {
+        type: String,
+        required: true,
+
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 
 })
+
+let orderModel = mongoose.model('Order', orderSchema);
+
+export default orderModel;
