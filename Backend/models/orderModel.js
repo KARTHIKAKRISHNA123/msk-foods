@@ -99,6 +99,8 @@ const orderSchema = mongoose.Schema({
     orderStatus: {
         type: String,
         required: true,
+        default: "Processing"
+        
 
     },
     createdAt: {
