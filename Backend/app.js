@@ -10,10 +10,14 @@ app.use(cookieParser());
 
 
 import products from "./routes/product.js";
+import order from "./routes/order.js";
 
 app.use("/api/v1/", products);
 app.use(errorHandler);
 app.use("/api/v1/", auth);
 app.use(errorHandler);
+app.use("/api/v1/", order);
+app.use(errorHandler);
+
 
 export default app;

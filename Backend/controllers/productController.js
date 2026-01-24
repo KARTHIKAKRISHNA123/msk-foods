@@ -96,3 +96,21 @@ export const deleteProduct = async (req, res, next) => {
     });
   }
 };
+
+
+
+//Create Review - api/v1/review
+export const createReview = catchAsyncErrors(async (req, res, next) => {
+  const {productId, rating, comment} = req.body;
+  const review = {
+    user: req.user.id,
+    rating,
+    comment,
+
+  }
+
+  const product = await Product.findById(productId);
+  product.reviews.find();
+  
+
+});
