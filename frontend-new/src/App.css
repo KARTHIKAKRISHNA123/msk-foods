@@ -1,0 +1,316 @@
+/* =========================================
+   1. GLOBAL LUXURY THEME
+   ========================================= */
+:root {
+  /* Pallette: Deep Emerald & Champagne Gold */
+  --royal-green: #0a2f0a;        /* Deepest Forest Green */
+  --lush-green: #1e4d1e;         /* Rich Leaf Green */
+  --royal-gold: #c5a059;         /* Metallic Champagne Gold */
+  --gold-gradient: linear-gradient(135deg, #c5a059 0%, #e6c88b 50%, #c5a059 100%);
+  --cream-bg: #fdfcf8;           /* Eggshell/Paper White */
+  
+  /* Fonts */
+  --font-serif: 'Playfair Display', serif; /* Luxury Headings */
+  --font-sans: 'Montserrat', sans-serif;   /* Clean Details */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #2c2c2c;
+  background-color: var(--cream-bg);
+  /* Subtle "Grain" texture for premium feel */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================
+   2. ROYAL NAVBAR
+   ========================================= */
+nav {
+  background: rgba(10, 47, 10, 0.95) !important; /* Deep Green Glass */
+  backdrop-filter: blur(12px);
+  padding: 1rem 3rem;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.3); /* Thin Gold Line */
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  z-index: 1000;
+}
+
+/* Logo Area */
+.navbar-brand { margin: 0; padding: 0; }
+.navbar-brand img { height: 55px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+
+/* Hide Search */
+.input-group { display: none !important; }
+
+/* Right Actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+#login_btn {
+  background: transparent;
+  border: 1px solid var(--royal-gold);
+  color: var(--royal-gold);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.85rem;
+  padding: 0.6rem 2rem;
+  border-radius: 0; /* Square edges = More Premium */
+  transition: all 0.4s ease;
+}
+#login_btn:hover {
+  background: var(--royal-gold);
+  color: var(--royal-green);
+  box-shadow: 0 0 15px rgba(197, 160, 89, 0.4);
+}
+
+#cart {
+  color: var(--royal-gold) !important;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#cart_count {
+  background: var(--royal-gold);
+  color: var(--royal-green);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-style: normal;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+}
+
+/* =========================================
+   3. HERO SECTION (International Style)
+   ========================================= */
+.hero-container {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+/* The "Floating" Product Image */
+.royal-image-wrapper {
+  position: relative;
+  z-index: 2;
+  animation: float 6s ease-in-out infinite;
+}
+
+.royal-image-wrapper img {
+  max-height: 550px;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.25)); /* Realistic shadow */
+  transition: transform 0.5s ease;
+}
+
+/* Background Circle behind product */
+.royal-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #e6f0e6 0%, transparent 70%);
+  z-index: -1;
+  border-radius: 50%;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+/* Typography */
+.royal-heading {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--royal-green);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.royal-subheading {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--royal-gold);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.royal-desc {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #555;
+  margin-bottom: 2rem;
+  max-width: 90%;
+}
+
+/* Gold Badges (Stamped Seal Look) */
+.gold-badge {
+  display: inline-block;
+  border: 1px solid var(--royal-gold);
+  color: var(--royal-green);
+  background: rgba(197, 160, 89, 0.1);
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-right: 10px;
+  margin-bottom: 1rem;
+}
+
+/* Premium Button */
+.btn-royal {
+  background: var(--royal-green);
+  color: white;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 1rem 3rem;
+  border: none;
+  border-radius: 0; /* Sharp edges */
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.btn-royal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+}
+
+.btn-royal:hover::after {
+  left: 100%;
+}
+
+.btn-royal:hover {
+  background: var(--lush-green);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(10, 47, 10, 0.2);
+}
+
+/* =========================================
+   4. FOOTER
+   ========================================= */
+footer {
+  background: var(--royal-green) !important;
+  color: white !important;
+  padding: 3rem 0;
+  margin-top: auto;
+  border-top: 4px solid var(--royal-gold);
+}
+
+/* 1. REDUCE NAVBAR HEIGHT */
+nav {
+  padding: 0.3rem 2rem !important; /* Reduced from 1rem to 0.3rem */
+  min-height: 60px; /* Optional: Sets a compact height */
+}
+
+/* 2. STYLE FOR CENTER TEXT (MSK FOODS) */
+.brand-center-text {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.8rem;
+  /* Premium Gold Gradient Text */
+  background: -webkit-linear-gradient(45deg, #d4af37, #fce38a, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: absolute; /* Forces it to stay exactly in the center */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  margin: 0;
+  text-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+}
+
+/* Adjust Logo size if needed to fit smaller navbar */
+.navbar-brand img {
+    height: 40px; /* Force logo to fit */
+    width: auto;
+}
+
+/* 1. NAVBAR HEIGHT & PADDING */
+nav {
+  padding: 0.5rem 2rem !important; /* Increased padding slightly for balance */
+  min-height: 70px;
+}
+
+/* 2. CENTER TEXT (Added Bottom Padding) */
+.brand-center-text {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.8rem;
+  background: -webkit-linear-gradient(45deg, #d4af37, #fce38a, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  
+  margin: 0;
+  padding-bottom: 5px; /* Added Bottom Padding */
+  text-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* 3. LOGO SIZE RESTORED */
+.navbar-brand img {
+    height: auto;  /* Let height auto-scale */
+    width: 150px;  /* Restored to original width */
+    max-height: 60px; /* Constraint to keep it inside navbar */
+}
+
+/* FIXED LOGO STYLING (Clean, Sharp, Proportional) */
+.navbar-brand img {
+    /* Removed filter: drop-shadow for a cleaner, sharper look */
+    
+    /* Fix Stretching: Set height, let width auto-adjust */
+    height: 55px;  /* Sets a fixed height that fits the navbar nicely */
+    width: auto;   /* Width adjusts automatically to maintain aspect ratio */
+    object-fit: contain; /* Ensures the image is never distorted/stretched */
+    
+    transition: transform 0.3s ease; /* Smooth hover transition */
+}
+
+/* Subtle hover effect */
+.navbar-brand img:hover {
+    transform: scale(1.03); /* Slightly enlarges on hover without blur */
+}

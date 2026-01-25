@@ -46,7 +46,8 @@ const productSchema = new mongoose.Schema({
                 'Beauty/Health',
                 'Sports',
                 'Outdoor',
-                'Home'
+                'Home',
+                'Health Food'
             ],
             message: "Please Select Correct Category"
         },
@@ -74,10 +75,8 @@ const productSchema = new mongoose.Schema({
             //     ref: "User",
             //     required: true
             // },
-            name: {
-                type: String,
-                required: true
-            },
+            // 
+            user: mongoose.Schema.Types.ObjectId,
             rating: {
                 type: Number,
                 required: true
