@@ -6,7 +6,7 @@ import { isAuthenticatedUser , authorizeRoles} from "../middlewares/authenticate
 
 const router = express.Router();
 
-router.route("/products").get(isAuthenticatedUser, getProducts);
+router.route("/products").get( getProducts);
 
 router.route("/product/:id").get(getSingleProduct).put(updateProduct).delete(deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createReview)

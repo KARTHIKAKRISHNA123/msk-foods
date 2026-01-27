@@ -314,3 +314,15 @@ nav {
 .navbar-brand img:hover {
     transform: scale(1.03); /* Slightly enlarges on hover without blur */
 }
+
+/* 1. Make the React root take up the full screen height */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 2. Push the footer to the bottom */
+footer {
+  margin-top: auto;
+}

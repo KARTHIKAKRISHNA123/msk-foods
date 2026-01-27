@@ -11,16 +11,22 @@ function App() {
   return (
     <Router>
       <HelmetProvider>
-        <div className="App">
+        {/* 1. Main Wrapper: Forces app to take at least 100% screen height */}
+        <div className="d-flex flex-column min-vh-100">
+            
             <Header/>
-            <div className='container container-fluid'>
+            
+            {/* 2. Content Wrapper: 'flex-grow-1' expands this area to fill empty space */}
+            <div className='container container-fluid flex-grow-1'>
               <ToastContainer theme='dark' />
               <Routes>
                   <Route path='/' element={<Home/>} />
                   {/* We will add more routes here later */}
               </Routes>
             </div>
+            
             <Footer/>
+            
         </div>
       </HelmetProvider>
     </Router>

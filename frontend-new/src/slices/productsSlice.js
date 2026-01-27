@@ -9,19 +9,17 @@ const productsSlice = createSlice({
         error: null 
     },
     reducers: {
-        // Renamed to 'productsRequest' (Plural) to match standard convention
         productsRequest(state, action) {
             return {
                 loading: true,
                 products: []
             }
         },
-        // Renamed to 'productsSuccess' (Plural)
         productsSuccess(state, action) {
             return {
                 loading: false,
                 products: action.payload.products,
-                productsCount: action.payload.count // Check if your API sends 'count' or 'productsCount'
+                productsCount: action.payload.count 
             }
         },
         productsFail(state, action) {
