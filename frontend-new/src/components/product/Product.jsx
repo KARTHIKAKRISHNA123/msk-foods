@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react'; // Removed useState as we use Framer Motion for state
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { toast } from 'react-toastify'; 
-// Note: Redux actions removed temporarily for UI testing
+import { useDispatch } from 'react-redux';
+//import { addItemsToCart } from '../../actions/cartActions';
+import { toast } from 'react-toastify';
 
 export default function Product({ product }) {
-    const [activeImage, setActiveImage] = useState(null);
+    const dispatch = useDispatch();
+    const hasBackImage = product.images && product.images.length > 1;
 
     const addToCartHandler = () => {
-        // Temporary UI-only feedback
+        dispatch(addItemsToCart(product._id, 1));
         toast.success('Item Added to Cart!',{
             position: 'bottom-center'
         });
@@ -24,36 +26,87 @@ export default function Product({ product }) {
         >
             <div className="row align-items-center">
                 
-                {/* --- LEFT: Product Image --- */}
-                <div className="col-md-6 text-center position-relative">
+                {/* --- LEFT: Product Image (Cinematic 3D Flip) --- */}
+                <div className="col-md-6 text-center" style={{ perspective: '1500px' }}> {/* Increased perspective for elegance */}
                     <motion.div 
-                        className="image-container"
-                        style={{ perspective: '1000px' }}
-                        initial={{ x: -50, opacity: 0 }}
-                        whileInView={{ x: 0, opacity: 1 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        onMouseEnter={() => {
-                            if (product.images && product.images[1]) {
-                                setActiveImage(product.images[1].image);
-                            }
+                        className="image-card-wrapper"
+                        initial="front"
+                        whileHover={hasBackImage ? "back" : "front"} // Only flip if back image exists
+                        variants={{
+                            front: { rotateY: 0 },
+                            back: { rotateY: 180 }
                         }}
-                        onMouseLeave={() => setActiveImage(null)}
+                        transition={{ duration: 1.2, ease: "easeInOut" }} // Slow, Royal Transition
+                        style={{ 
+                            position: 'relative', 
+                            width: '100%', 
+                            height: '550px', // Fixed height to prevent layout shift
+                            transformStyle: 'preserve-3d', // Crucial for 3D flip
+                            cursor: 'pointer'
+                        }}
                     >
-                        <motion.img 
-                            src={activeImage || (product.images && product.images[0] ? product.images[0].image : '/images/placeholder.png')} 
-                            alt={product.name}
-                            className="img-fluid"
-                            style={{ maxHeight: '550px', cursor: 'pointer' }}
-                            animate={{ 
-                                scale: [1, 1.02, 1], 
-                                filter: [
-                                    'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)', 
-                                    'drop-shadow(0 40px 70px rgba(10, 47, 10, 0.4)) brightness(1.1)', 
-                                    'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)'
-                                ]
+                        {/* --- FRONT SIDE --- */}
+                        <motion.div
+                            style={{
+                                position: 'absolute',
+                                width: '100%',
+                                height: '100%',
+                                backfaceVisibility: 'hidden', // Hides this side when flipped
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        />
+                        >
+                            <motion.img 
+                                src={product.images && product.images[0] ? product.images[0].image : '/images/placeholder.png'} 
+                                alt={product.name}
+                                className="img-fluid"
+                                style={{ maxHeight: '550px', borderRadius: '15px' }}
+                                // The "Royal Pulse" (Breathing Effect)
+                                animate={{ 
+                                    scale: [1, 1.02, 1], 
+                                    filter: [
+                                        'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)', 
+                                        'drop-shadow(0 40px 70px rgba(10, 47, 10, 0.4)) brightness(1.1)', // Shiny peak
+                                        'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)'
+                                    ]
+                                }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                            />
+                        </motion.div>
+
+                        {/* --- BACK SIDE (Only renders if image exists) --- */}
+                        {hasBackImage && (
+                            <motion.div
+                                style={{
+                                    position: 'absolute',
+                                    width: '100%',
+                                    height: '100%',
+                                    backfaceVisibility: 'hidden',
+                                    rotateY: 180, // Pre-rotated so it shows correctly when flipped
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <motion.img 
+                                    src={product.images[1].image} 
+                                    alt={`${product.name} Back View`}
+                                    className="img-fluid"
+                                    style={{ maxHeight: '550px', borderRadius: '15px' }}
+                                    // Keep the same "Royal Pulse" on the back too
+                                    animate={{ 
+                                        scale: [1, 1.02, 1], 
+                                        filter: [
+                                            'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)', 
+                                            'drop-shadow(0 40px 70px rgba(10, 47, 10, 0.4)) brightness(1.1)', 
+                                            'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)'
+                                        ]
+                                    }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                />
+                            </motion.div>
+                        )}
                     </motion.div>
                 </div>
 
@@ -81,6 +134,7 @@ export default function Product({ product }) {
                             {product.name}
                         </motion.h1>
 
+                        {/* Ratings */}
                         <motion.div 
                             initial={{ y: 30, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
@@ -115,6 +169,7 @@ export default function Product({ product }) {
                             {product.description}
                         </motion.p>
                         
+                        {/* Buttons Area */}
                         <motion.div 
                             initial={{ y: 30, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
@@ -154,6 +209,7 @@ export default function Product({ product }) {
 
                     </div>
                 </div>
+
             </div>
         </motion.section>
     )
