@@ -6,21 +6,26 @@ import Header from './components/layouts/Header';
 import Footer from './components/layouts/Footer';
 import Home from './components/Home';
 import './App.css';
+import ProductDetails from './components/product/ProductDetails';
+import ScrollToTop from './components/layouts/ScrollToTop'; // 👈 1. Import it
 
 function App() {
   return (
     <Router>
       <HelmetProvider>
-        {/* 1. Main Wrapper: Forces app to take at least 100% screen height */}
         <div className="d-flex flex-column min-vh-100">
+          <ScrollToTop />
             
             <Header/>
             
-            {/* 2. Content Wrapper: 'flex-grow-1' expands this area to fill empty space */}
-            <div className='container container-fluid flex-grow-1'>
+            {/* 👇 FIXED: Removed 'container' and 'container-fluid'. 
+               Now it is just 'flex-grow-1', allowing the Hero to go Full Width.
+            */}
+            <div className='flex-grow-1'> 
               <ToastContainer theme='dark' />
               <Routes>
                   <Route path='/' element={<Home/>} />
+                  <Route path='/product/:id' element={<ProductDetails/>} />
                   {/* We will add more routes here later */}
               </Routes>
             </div>
