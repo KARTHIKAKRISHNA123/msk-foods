@@ -13,6 +13,8 @@ export const getProducts = async (req, res, next) => {
   const apiFeatures = new APIFeatures(Product.find(), req.query).search().filter().paginate(resPerPage);
   const products = await apiFeatures.query;
   // await new Promise(resolve => setTimeout(resolve, 3000));
+
+  // return next(new errorHandler("This is a temp error from getProducts", 500))
   res.status(200).json({
     success: true,
     //message: "This route will show all products in the database"

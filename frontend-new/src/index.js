@@ -4,6 +4,7 @@ import App from './App';
 import store from './store.js';             // 1. Import the store
 import { Provider } from 'react-redux';  // 2. Import the Provider
 
+
 console.log(store);
 
 

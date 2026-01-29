@@ -326,3 +326,62 @@ nav {
 footer {
   margin-top: auto;
 }
+
+/* --- THE "ROYAL PLAQUE" TOAST THEME --- */
+
+/* 1. Global Settings */
+.Toastify__toast-container {
+    padding: 15px; /* More breathing room */
+    width: 380px !important; /* Slightly wider for elegance */
+}
+
+/* 2. The Card: Premium Cardstock Look */
+.Toastify__toast--error {
+    /* Subtle Gradient: Pearl to White */
+    background: linear-gradient(135deg, #fff9ea 0%, #ffffff 100%) !important;
+    
+    color: #0a2f0a !important; /* Dark Green Text (High Contrast) */
+    
+    /* The "Royal Accent" - Thick Gold Bar on Left */
+    border-left: 6px solid #c5a059 !important;
+    
+    /* Thin Gold border on other sides */
+    border-top: 1px solid #eaddcf !important;
+    border-right: 1px solid #eaddcf !important;
+    border-bottom: 1px solid #eaddcf !important;
+    
+    border-radius: 0px 4px 4px 0px !important; /* Sharp left, soft right */
+    
+    /* Soft, expensive-looking shadow */
+    box-shadow: 0 10px 30px rgba(10, 47, 10, 0.15) !important;
+    
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 600 !important;
+    min-height: 75px !important;
+}
+
+/* 3. The Icon: Gold (Matches the Left Bar) */
+.Toastify__toast-icon svg {
+    fill: #c5a059 !important;
+    width: 28px;
+    height: 28px;
+    filter: drop-shadow(0 2px 4px rgba(197, 160, 89, 0.3)); /* 3D Icon effect */
+}
+
+/* 4. The Progress Bar: Thin and Elegant */
+.Toastify__progress-bar--error {
+    background: #c5a059 !important;
+    height: 3px !important;
+    opacity: 0.6;
+}
+
+/* 5. The Close Button */
+.Toastify__close-button {
+    color: #0a2f0a !important; /* Green to match text */
+    opacity: 0.4 !important;
+}
+
+.Toastify__close-button:hover {
+    color: #c5a059 !important; /* Gold on hover */
+    opacity: 1 !important;
+}

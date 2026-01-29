@@ -22,7 +22,7 @@ function App() {
                Now it is just 'flex-grow-1', allowing the Hero to go Full Width.
             */}
             <div className='flex-grow-1'> 
-              <ToastContainer theme='dark' />
+              <ToastContainer theme='colored' />
               <Routes>
                   <Route path='/' element={<Home/>} />
                   <Route path='/product/:id' element={<ProductDetails/>} />
