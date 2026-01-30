@@ -1,34 +1,66 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, Link } from 'react-router-dom'; 
 import { motion } from 'framer-motion';
+import { getProducts } from '../../slices/productsSlice'; 
+//import { addItemsToCart } from '../../actions/cartActions'; 
 import MetaData from '../layouts/MetaData';
-import { useParams } from 'react-router-dom';
+import Loader from '../layouts/Loader'; 
+import { toast } from 'react-toastify';
 
-// ✨ Nursing Icon (Kept the good one)
+// --- ICONS ---
 const NursingIcon = () => (
-    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-3">
+    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-3">
         <circle cx="15" cy="5.5" r="2.5" fill="#c5a059"/>
         <circle cx="10.5" cy="11.5" r="2" fill="#c5a059"/>
         <path d="M17 9.5C16.2 9.5 15.5 9.8 15 10.2V11C15 12.6569 13.6569 14 12 14H11C9.34315 14 8 12.6569 8 11V16C8 18.2091 9.79086 20 12 20H15C17.7614 20 20 17.7614 20 15V12.5C20 10.8431 18.6569 9.5 17 9.5Z" fill="#c5a059"/>
     </svg>
 );
 
+const TrustBadge = ({ icon, title, subtitle }) => (
+    <div className="d-flex align-items-center gap-3 p-3" style={{ border: '1px solid rgba(197, 160, 89, 0.2)', background: '#fff' }}>
+        <div style={{ color: '#c5a059', fontSize: '1.5rem' }}>{icon}</div>
+        <div className="text-start">
+            <h6 className="mb-0 fw-bold text-uppercase" style={{ fontSize: '0.8rem', letterSpacing: '1px', color: '#0f420f' }}>{title}</h6>
+            <small className="text-muted" style={{ fontSize: '0.7rem' }}>{subtitle}</small>
+        </div>
+    </div>
+);
+
 export default function ProductDetails() {
+    const { loading, products, error } = useSelector((state) => state.productsState);
+    const dispatch = useDispatch();
     const { id } = useParams();
+    const [quantity, setQuantity] = useState(1);
+
+    const product = products && products.find(p => p._id === id) || (products && products[0]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [id]);
+        if (!products || products.length === 0) {
+            dispatch(getProducts());
+        }
+        if (error) {
+            toast.error(error, { position: 'top-center', theme: 'colored' });
+        }
+    }, [dispatch, id, error, products]);
 
-    // ⚠️ TEMPORARY STATIC DATA
-    const product = {
-        name: "MSK Health Mix",
-        description: "A carefully crafted blend of 15 varieties of millets, prepared using traditional methods and modern hygiene standards.",
-        price: 250,
-        ratings: 4.5,
-        numOfReviews: 145,
-        images: [{ image: '/images/products/healthmix.jpg' }] 
-    };
+    const increaseQty = () => {
+        if (product && product.stock <= quantity) return;
+        setQuantity(quantity + 1);
+    }
 
+    const decreaseQty = () => {
+        if (1 >= quantity) return;
+        setQuantity(quantity - 1);
+    }
+
+    const addToCartHandler = () => {
+        dispatch(addItemsToCart(product._id, quantity));
+        toast.success('Item Added to Cart!', { position: 'top-center', theme: 'colored' });
+    }
+
+    // --- ANIMATIONS ---
     const fadeInUp = {
         hidden: { opacity: 0, y: 50 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
@@ -36,17 +68,39 @@ export default function ProductDetails() {
 
     const staggerContainer = {
         hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.2 }
-        }
+        visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
     };
+
+    const marqueeVariants = {
+        animate: {
+            x: [0, -1000],
+            transition: {
+                x: {
+                    repeat: Infinity,
+                    repeatType: "loop",
+                    duration: 35, // Slower speed
+                    ease: "linear",
+                },
+            },
+        },
+    };
+
+    if (loading) return <Loader />;
+    
+    if (!product) return null;
 
     return (
         <Fragment>
             <MetaData title={product.name} />
             
-            <div style={{ background: '#fdfbf7', overflowX: 'hidden' }}>
+            <div style={{ background: '#fdfbf7', overflowX: 'hidden', backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}>
+
+                {/* BACK BUTTON */}
+                <div className="container pt-4">
+                    <Link to="/" className="text-decoration-none d-flex align-items-center" style={{ color: '#c5a059', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                        <i className="fa fa-arrow-left me-2"></i> Back to Home
+                    </Link>
+                </div>
 
                 {/* --- HERO HEADER --- */}
                 <section className="container py-5 text-center">
@@ -55,17 +109,130 @@ export default function ProductDetails() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1 }}
                     >
+                        {/* 1. Brand Tagline */}
                         <span className="text-uppercase fw-bold" style={{ color: '#c5a059', letterSpacing: '3px' }}>
                             The Gold Standard
                         </span>
+
+                        {/* 2. Headline */}
                         <h1 className="display-3 fw-bold mt-2 mb-4" style={{ fontFamily: 'Playfair Display, serif', color: '#0f420f' }}>
                             Wholesome Nutrition,<br />Naturally Balanced.
                         </h1>
-                        <div style={{ width: '80px', height: '2px', background: '#c5a059', margin: '0 auto' }}></div>
+
+                        {/* Product Image */}
+                        <motion.div 
+                            className="my-4 position-relative d-inline-block"
+                            animate={{ y: [0, -15, 0] }} 
+                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                             <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(197,160,89,0.3) 0%, rgba(255,255,255,0) 70%)', zIndex: -1 }}></div>
+                            
+                            <img 
+                                src={product.images && product.images[0] ? product.images[0].image : '/images/placeholder.png'} 
+                                alt={product.name} 
+                                className="img-fluid"
+                                style={{ maxHeight: '350px', filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.1))' }}
+                            />
+                        </motion.div>
+
+                        {/* 3. Product Name */}
+                        <h2 className="mb-2" style={{ fontFamily: 'Playfair Display, serif', color: '#c5a059', fontSize: '2rem' }}>
+                            {product.name}
+                        </h2>
+                        
+                        {/* 4. Price */}
+                        <h3 className="mb-4" style={{ color: '#c5a059', fontFamily: 'Playfair Display, serif', fontWeight: 'bold', fontSize: '2.5rem' }}>
+                            ₹{product.price}
+                        </h3>
+
+                        {/* 5. Controls */}
+                        <div className="d-flex flex-column align-items-center gap-4 mb-5">
+                             <div className="d-flex align-items-center justify-content-center">
+                                <span className="me-3 text-uppercase" style={{ letterSpacing: '1px', fontSize: '0.9rem', color: '#555' }}>Quantity:</span>
+                                <div className="stockCounter d-flex align-items-center" style={{ border: '1px solid #c5a059', borderRadius: '0', padding: '8px 15px', background: '#fff' }}>
+                                    <span className="btn btn-sm" onClick={decreaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>-</span>
+                                    <input type="number" className="form-control count border-0 text-center" value={quantity} readOnly style={{ width: '50px', fontWeight: 'bold', background: 'transparent', fontSize: '1.1rem' }} />
+                                    <span className="btn btn-sm" onClick={increaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>+</span>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={addToCartHandler}
+                                disabled={product.stock === 0}
+                                className="btn px-5 py-3 shadow-sm" 
+                                style={{ 
+                                    backgroundColor: '#0f420f', 
+                                    color: '#c5a059',
+                                    border: '1px solid #0f420f',
+                                    borderRadius: '0',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '3px',
+                                    fontWeight: '600',
+                                    minWidth: '250px',
+                                    fontSize: '1rem'
+                                }}
+                            >
+                                {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                            </button>
+                        </div>
                     </motion.div>
                 </section>
 
-                {/* --- SECTION 1: KEY BENEFITS (Bento Grid) --- */}
+                {/* --- INFINITE INGREDIENTS MARQUEE --- */}
+                <div className="py-4 mb-5" style={{ background: '#0f420f', overflow: 'hidden', whiteSpace: 'nowrap', borderTop: '2px solid #c5a059', borderBottom: '2px solid #c5a059' }}>
+                    <motion.div variants={marqueeVariants} animate="animate" className="d-flex gap-5">
+                        {[...Array(10)].map((_, i) => (
+                            <h4 key={i} className="text-uppercase m-0 mx-5" style={{ 
+                                color: 'rgba(244, 235, 208, 0.25)', 
+                                fontFamily: 'Playfair Display', 
+                                letterSpacing: '3px'
+                            }}>
+                                ✦ 15 MILLETS · LOW GLYCEMIC · HEART FRIENDLY · HIGH FIBRE · SUSTAINED ENERGY · TRADITIONAL SUPERFOOD ✦
+                            </h4>
+                        ))}
+                    </motion.div>
+                </div>
+
+                {/* --- TRUST BADGES --- */}
+                {/* --- TRUST BADGES (Updated to Match "Suitable For" Style) --- */}
+<section className="container mb-5">
+    <div className="row g-4 justify-content-center">
+        {[
+            { 
+                icon: <i className="fa fa-leaf fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
+                title: "100% Natural", 
+                subtitle: "No Artificial Flavors" 
+            },
+            { 
+                icon: <i className="fa fa-ban fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
+                title: "No Preservatives", 
+                subtitle: "Clean Label" 
+            },
+            { 
+                icon: <i className="fa fa-certificate fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
+                title: "Premium Quality", 
+                subtitle: "Export Standard" 
+            }
+        ].map((badge, index) => (
+            <motion.div 
+                key={index}
+                className="col-md-4" // Uses 3 columns (larger cards)
+                whileHover={{ scale: 1.05 }}
+            >
+                <div 
+                    className="p-4 text-center h-100 shadow-sm" 
+                    style={{ background: '#fff', borderRadius: '0' }}
+                >
+                    {badge.icon}
+                    <h5 className="fw-bold" style={{ color: '#0f420f', fontSize: '1rem' }}>{badge.title}</h5>
+                    <p className="small text-muted mb-0">{badge.subtitle}</p>
+                </div>
+            </motion.div>
+        ))}
+    </div>
+</section>
+
+                {/* --- BENEFITS --- */}
                 <section className="container mb-5">
                     <motion.div 
                         className="row g-4"
@@ -79,11 +246,7 @@ export default function ProductDetails() {
                             <motion.div 
                                 className="p-5 h-100 shadow-sm" 
                                 style={{ background: '#fff', border: '1px solid rgba(197,160,89,0.3)' }}
-                                whileHover={{ 
-                                    y: -10, 
-                                    borderColor: '#c5a059', 
-                                    boxShadow: '0 15px 30px rgba(197,160,89,0.15)' 
-                                }}
+                                whileHover={{ y: -10, borderColor: '#c5a059', boxShadow: '0 15px 30px rgba(197,160,89,0.15)' }}
                                 transition={{ type: 'spring', stiffness: 300 }}
                             >
                                 <i className="fa fa-heartbeat fs-1 mb-3" style={{ color: '#c5a059' }}></i>
@@ -101,11 +264,7 @@ export default function ProductDetails() {
                             <motion.div 
                                 className="p-5 h-100 shadow-sm" 
                                 style={{ background: '#fff', border: '1px solid rgba(197,160,89,0.3)' }}
-                                whileHover={{ 
-                                    y: -10, 
-                                    borderColor: '#c5a059',
-                                    boxShadow: '0 15px 30px rgba(197,160,89,0.15)'
-                                }}
+                                whileHover={{ y: -10, borderColor: '#c5a059', boxShadow: '0 15px 30px rgba(197,160,89,0.15)' }}
                                 transition={{ type: 'spring', stiffness: 300 }}
                             >
                                 <i className="fa fa-tint fs-1 mb-3" style={{ color: '#c5a059' }}></i>
@@ -144,7 +303,7 @@ export default function ProductDetails() {
                     </motion.div>
                 </section>
 
-                {/* --- SECTION 2: DIRECTIONS --- */}
+                {/* --- DIRECTIONS --- */}
                 <section className="container py-5">
                     <motion.div 
                         initial="hidden" 
@@ -180,7 +339,7 @@ export default function ProductDetails() {
                     </motion.div>
                 </section>
 
-                {/* --- SECTION 3: SUITABLE FOR (4 Items now) --- */}
+                {/* --- SUITABLE FOR --- */}
                 <section className="py-5" style={{ background: '#fff' }}>
                     <div className="container text-center">
                          <h3 className="fw-bold mb-5" style={{ color: '#0f420f', letterSpacing: '2px' }}>SUITABLE FOR</h3>
@@ -202,11 +361,9 @@ export default function ProductDetails() {
                                     renderIcon: () => <NursingIcon />, 
                                     text: "Nursing Mothers" 
                                 }
-                                // REMOVED: Pregnant Women
                             ].map((item, index) => (
                                 <motion.div 
                                     key={index}
-                                    // ✨ UPDATED: col-md-3 (4 items per row looks perfect)
                                     className="col-6 col-md-3"
                                     whileHover={{ scale: 1.1 }}
                                 >
@@ -235,7 +392,7 @@ export default function ProductDetails() {
                             <div className="col-md-4 mb-4 mb-md-0 text-center">
                                 <h5 className="text-uppercase mb-3" style={{ letterSpacing: '2px', color: '#c5a059' }}>Manufactured By</h5>
                                 <h2 className="fw-bold mb-1">MSK FOODS</h2>
-                                <p className="mb-0">No. 100, Main Road, Olangulam</p>
+                                <p className="mb-0">No. 100, Main Road, Alangulam</p>
                                 <p className="mt-2 fw-bold" style={{ color: '#c5a059' }}>Ph: 94861 70416</p>
                             </div>
                             <div className="col-md-4 text-md-end">

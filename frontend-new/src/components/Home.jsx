@@ -1,41 +1,44 @@
 import React, { useEffect, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProducts } from '../actions/productActions'; 
+import { getProducts } from '../slices/productsSlice';
 import MetaData from './layouts/MetaData';
 import Loader from './layouts/Loader';
-import Product from './product/Product'; 
-import Hero from './home/Hero'; 
+import Product from './product/Product';
+import Hero from './home/Hero';
 import { toast } from 'react-toastify';
 
 export default function Home() {
     const dispatch = useDispatch();
-    const { products, loading, error } = useSelector((state) => state.productsState);
+    const { products, loading, error } = useSelector(
+        (state) => state.productsState
+    );
 
-    // ✨ EFFECT 1: Fetch Products (Runs ONLY ONCE on mount)
+    // Fetch product (single product architecture)
     useEffect(() => {
         dispatch(getProducts());
     }, [dispatch]);
 
-    // ✨ EFFECT 2: Handle Errors (Runs ONLY when error changes)
+    // Handle errors
     useEffect(() => {
         if (error) {
             toast.error(error, {
-                position: "top-center",
+                position: 'top-center',
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
                 pauseOnHover: true,
                 draggable: true,
-                theme: "colored",
+                theme: 'colored',
             });
         }
-    }, [error]); // 👈 This effect strictly watches for errors
+    }, [error]);
 
-    const product = products && products[0]; 
+    // Single product
+    const product = products && products[0];
 
     return (
         <Fragment>
-            <MetaData title={'Best Health Mix'} />
+            <MetaData title="Best Health Mix" />
 
             {loading ? (
                 <Loader />

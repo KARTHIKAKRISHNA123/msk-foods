@@ -13,11 +13,10 @@ export default function Hero({ product }) {
         <section 
             className="position-relative w-100 d-flex flex-column align-items-center justify-content-center" 
             style={{ 
-                // ✨ FIXED: changed 'height' to 'minHeight' and added padding
                 minHeight: '100vh', 
-                paddingTop: '80px',    // Space from top
-                paddingBottom: '120px', // ✨ MORE SPACE at the bottom for the frame
-                background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ebd0 100%)', // Royal Cream
+                paddingTop: '80px',    
+                paddingBottom: '120px', 
+                background: 'linear-gradient(135deg, #fdfbf7 0%, #f4ebd0 100%)', 
                 overflow: 'hidden'
             }}
         >
@@ -46,7 +45,7 @@ export default function Hero({ product }) {
 
             <div className="container text-center position-relative" style={{ zIndex: 2 }}>
                 
-                {/* 1. Badge */}
+                {/* ✨ 1. UNIFIED BADGE (Responsive & Visible Everywhere) */}
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -54,13 +53,17 @@ export default function Hero({ product }) {
                     className="mb-4"
                 >
                     <span 
-                        className="px-4 py-2 text-uppercase fw-bold" 
+                        className="d-inline-block text-uppercase fw-bold" 
                         style={{ 
-                            letterSpacing: '4px', 
+                            // ✨ Responsive Tweaks:
+                            letterSpacing: '3px',       // Reduced slightly to fit mobile
                             color: '#0f420f', 
                             border: '1px solid #c5a059',
                             background: 'rgba(255,255,255,0.6)',
-                            fontSize: '0.8rem'
+                            fontSize: '0.8rem',
+                            padding: '10px 20px',       // Comfortable padding
+                            maxWidth: '100%',           // Prevents overflow
+                            whiteSpace: 'normal'        // Allows text to wrap nicely on tiny phones
                         }}
                     >
                         Since 2024 • Authentic Tradition
@@ -75,7 +78,7 @@ export default function Hero({ product }) {
                     className="display-2 fw-bold mb-3"
                     style={{ 
                         fontFamily: 'Playfair Display, serif', 
-                        color: '#c5a059', // Gold Title
+                        color: '#c5a059', 
                         textShadow: '2px 2px 0px rgba(15, 66, 15, 0.05)',
                         lineHeight: '1.2'
                     }}
@@ -94,22 +97,22 @@ export default function Hero({ product }) {
                     100% Natural Ingredients. No Preservatives. Pure Health.
                 </motion.p>
 
-                {/* 3. Hero Image (With breathing room) */}
+                {/* 3. Hero Image */}
                 <motion.div
                     initial={{ opacity: 0, y: 100 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1.2, delay: 0.6, type: "spring" }}
                     className="mb-5 position-relative"
-                    style={{ padding: '10px' }} // Tiny padding around the image itself
+                    style={{ padding: '10px' }} 
                 >
                     <motion.img 
                         src={product?.images[0]?.image || '/images/placeholder.png'}
                         alt="Hero Product"
                         className="img-fluid"
                         style={{ 
-                            maxHeight: '420px', // Slightly adjusted to fit comfortably
+                            maxHeight: '420px', 
                             filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.25))',
-                            borderRadius: '10px' // Softens the corners if the image is sharp
+                            borderRadius: '10px' 
                         }}
                         animate={{ y: [0, -15, 0] }} 
                         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}

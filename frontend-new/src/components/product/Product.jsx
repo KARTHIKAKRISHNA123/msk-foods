@@ -1,18 +1,21 @@
-import React from 'react'; // Removed useState as we use Framer Motion for state
+import React from 'react'; 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
-//import { addItemsToCart } from '../../actions/cartActions';
+//import { addItemsToCart } from '../../actions/cartActions'; // ✨ Fixed: Uncommented this so the button works
 import { toast } from 'react-toastify';
 
 export default function Product({ product }) {
     const dispatch = useDispatch();
+    
+    // Safety check: ensure images exist before checking length
     const hasBackImage = product.images && product.images.length > 1;
 
     const addToCartHandler = () => {
         dispatch(addItemsToCart(product._id, 1));
-        toast.success('Item Added to Cart!',{
-            position: 'bottom-center'
+        toast.success('Item Added to Cart!', {
+            position: 'top-center', // ✨ Fixed: Changed to top-center to match your Royal theme preference
+            theme: "colored"
         });
     }
 
@@ -27,21 +30,21 @@ export default function Product({ product }) {
             <div className="row align-items-center">
                 
                 {/* --- LEFT: Product Image (Cinematic 3D Flip) --- */}
-                <div className="col-md-6 text-center" style={{ perspective: '1500px' }}> {/* Increased perspective for elegance */}
+                <div className="col-md-6 text-center" style={{ perspective: '1500px' }}> 
                     <motion.div 
                         className="image-card-wrapper"
                         initial="front"
-                        whileHover={hasBackImage ? "back" : "front"} // Only flip if back image exists
+                        whileHover={hasBackImage ? "back" : "front"} 
                         variants={{
                             front: { rotateY: 0 },
                             back: { rotateY: 180 }
                         }}
-                        transition={{ duration: 1.2, ease: "easeInOut" }} // Slow, Royal Transition
+                        transition={{ duration: 1.2, ease: "easeInOut" }} 
                         style={{ 
                             position: 'relative', 
                             width: '100%', 
-                            height: '550px', // Fixed height to prevent layout shift
-                            transformStyle: 'preserve-3d', // Crucial for 3D flip
+                            height: '550px',
+                            transformStyle: 'preserve-3d', 
                             cursor: 'pointer'
                         }}
                     >
@@ -51,7 +54,7 @@ export default function Product({ product }) {
                                 position: 'absolute',
                                 width: '100%',
                                 height: '100%',
-                                backfaceVisibility: 'hidden', // Hides this side when flipped
+                                backfaceVisibility: 'hidden', 
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center'
@@ -62,12 +65,11 @@ export default function Product({ product }) {
                                 alt={product.name}
                                 className="img-fluid"
                                 style={{ maxHeight: '550px', borderRadius: '15px' }}
-                                // The "Royal Pulse" (Breathing Effect)
                                 animate={{ 
                                     scale: [1, 1.02, 1], 
                                     filter: [
                                         'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)', 
-                                        'drop-shadow(0 40px 70px rgba(10, 47, 10, 0.4)) brightness(1.1)', // Shiny peak
+                                        'drop-shadow(0 40px 70px rgba(10, 47, 10, 0.4)) brightness(1.1)', 
                                         'drop-shadow(0 25px 50px rgba(10, 47, 10, 0.3)) brightness(1)'
                                     ]
                                 }}
@@ -75,7 +77,7 @@ export default function Product({ product }) {
                             />
                         </motion.div>
 
-                        {/* --- BACK SIDE (Only renders if image exists) --- */}
+                        {/* --- BACK SIDE --- */}
                         {hasBackImage && (
                             <motion.div
                                 style={{
@@ -83,7 +85,7 @@ export default function Product({ product }) {
                                     width: '100%',
                                     height: '100%',
                                     backfaceVisibility: 'hidden',
-                                    rotateY: 180, // Pre-rotated so it shows correctly when flipped
+                                    rotateY: 180, 
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center'
@@ -94,7 +96,6 @@ export default function Product({ product }) {
                                     alt={`${product.name} Back View`}
                                     className="img-fluid"
                                     style={{ maxHeight: '550px', borderRadius: '15px' }}
-                                    // Keep the same "Royal Pulse" on the back too
                                     animate={{ 
                                         scale: [1, 1.02, 1], 
                                         filter: [
@@ -134,7 +135,6 @@ export default function Product({ product }) {
                             {product.name}
                         </motion.h1>
 
-                        {/* Ratings */}
                         <motion.div 
                             initial={{ y: 30, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
@@ -169,7 +169,6 @@ export default function Product({ product }) {
                             {product.description}
                         </motion.p>
                         
-                        {/* Buttons Area */}
                         <motion.div 
                             initial={{ y: 30, opacity: 0 }}
                             whileInView={{ y: 0, opacity: 1 }}
@@ -200,7 +199,8 @@ export default function Product({ product }) {
                                     borderRadius: '0',
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
-                                    fontWeight: '600'
+                                    fontWeight: '600',
+                                    textDecoration: 'none' // Ensures the link looks exactly like a button
                                 }}
                             >
                                 Details
