@@ -8,6 +8,7 @@ import Home from './components/Home';
 import './App.css';
 import ProductDetails from './components/product/ProductDetails';
 import ScrollToTop from './components/layouts/ScrollToTop'; // 👈 1. Import it
+import Login from './components/user/Login';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Routes>
                   <Route path='/' element={<Home/>} />
                   <Route path='/product/:id' element={<ProductDetails/>} />
+                  <Route path='/login' element={<Login/>} />
                   {/* We will add more routes here later */}
               </Routes>
             </div>

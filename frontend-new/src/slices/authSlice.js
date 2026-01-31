@@ -2,28 +2,29 @@ import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const authSlice = createSlice({
-    name: "auth",
+    name: 'auth',
     initialState: {
         loading: false,
-        isAuthenticated: false
+        isAuthenticated: false,
+        user: null,
+        error: null
     },
     reducers: {
         loginRequest(state, action) {
             return {
                 ...state,
                 loading: true,
-                isAuthenticated: false
             }
         },
-        productsSuccess(state, action) {
+        loginSuccess(state, action) {
             return {
                 ...state,
                 loading: false,
-                products: action.payload.products,
-                productsCount: action.payload.count 
+                isAuthenticated: true,
+                user: action.payload.user
             }
         },
-        productsFail(state, action) {
+        loginFail(state, action) {
             return {
                 ...state,
                 loading: false,
@@ -39,12 +40,12 @@ const authSlice = createSlice({
     }
 });
 
-const { actions, reducer } = productsSlice;
+const { actions, reducer } = authSlice;
 
 export const { 
-    productsRequest, 
-    productsSuccess, 
-    productsFail,
+    loginRequest, 
+    loginSuccess, 
+    loginFail,
     clearError
 } = actions;
 
@@ -52,13 +53,12 @@ export default reducer;
 
 
 // --- THUNK (The API Call) ---
-// This replaces your old 'productActions.js' file
-export const getProducts = () => async (dispatch) => {
+export const login = (email, password) => async (dispatch) => {
     try {
-        dispatch(productsRequest());
-        const { data } = await axios.get('/api/v1/products');
-        dispatch(productsSuccess(data));
+        dispatch(loginRequest());
+        const { data } = await axios.post('/api/v1/login', { email, password });
+        dispatch(loginSuccess(data));
     } catch (error) {
-        dispatch(productsFail(error.response.data.message || error.message));
+        dispatch(loginFail(error.response.data.message || error.message));
     }
 };

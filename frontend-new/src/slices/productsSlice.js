@@ -2,12 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const productsSlice = createSlice({
-    name: "products",
+    name: 'products',
     initialState: {
         loading: false,
         products: [],
         productsCount: 0,
-        error: null 
+        error: null
     },
     reducers: {
         productsRequest(state, action) {
@@ -22,7 +22,7 @@ const productsSlice = createSlice({
                 ...state,
                 loading: false,
                 products: action.payload.products,
-                productsCount: action.payload.count 
+                productsCount: action.payload.count
             }
         },
         productsFail(state, action) {
@@ -54,7 +54,6 @@ export default reducer;
 
 
 // --- THUNK (The API Call) ---
-// This replaces your old 'productActions.js' file
 export const getProducts = () => async (dispatch) => {
     try {
         dispatch(productsRequest());
