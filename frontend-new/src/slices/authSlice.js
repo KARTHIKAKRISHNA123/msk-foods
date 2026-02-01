@@ -10,6 +10,33 @@ const authSlice = createSlice({
         error: null
     },
     reducers: {
+        registerRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+            }
+        },
+        registerSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: true,
+                user: action.payload.user
+            }
+        },
+        registerFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
+        },
+        clearError(state, action) {
+            return {
+                ...state,
+                error: null
+            }
+        },
         loginRequest(state, action) {
             return {
                 ...state,
@@ -30,12 +57,6 @@ const authSlice = createSlice({
                 loading: false,
                 error: action.payload
             }
-        },
-        clearError(state, action) {
-            return {
-                ...state,
-                error: null
-            }
         }
     }
 });
@@ -46,7 +67,10 @@ export const {
     loginRequest, 
     loginSuccess, 
     loginFail,
-    clearError
+    clearError,
+    registerRequest,
+    registerSuccess,
+    registerFail
 } = actions;
 
 export default reducer;
@@ -60,5 +84,27 @@ export const login = (email, password) => async (dispatch) => {
         dispatch(loginSuccess(data));
     } catch (error) {
         dispatch(loginFail(error.response.data.message || error.message));
+    }
+};
+
+
+// ... existing login thunk ...
+
+// --- REGISTER THUNK (Add this) ---
+export const register = (userData) => async (dispatch) => {
+    try {
+        dispatch(registerRequest());
+        
+        // Config is important for images!
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+
+        const { data } = await axios.post('/api/v1/register', userData, config);
+        dispatch(registerSuccess(data));
+    } catch (error) {
+        dispatch(registerFail(error.response.data.message || error.message));
     }
 };

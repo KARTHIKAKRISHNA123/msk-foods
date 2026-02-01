@@ -411,3 +411,55 @@ input:-webkit-autofill:active {
     color: rgba(15, 66, 15, 0.4) !important;
     font-size: 0.9rem;
 }
+
+/* --- THE "GOLD STANDARD" TOAST THEME (GLOBAL) --- */
+
+/* --- THE "CHAMPAGNE GOLD" LUXURY THEME (GLOBAL) --- */
+
+/* 1. The Container (Shiny, Light, Aesthetic) */
+.Toastify__toast {
+    /* ✨ Pale Champagne Gradient (The "Shiny" Background) */
+    background: linear-gradient(135deg, #fffbf2 0%, #f7efd2 100%) !important;
+    
+    /* Typography */
+    color: #8a6d3b !important;            /* Dark Antique Gold (Readable & Premium) */
+    font-family: 'Playfair Display', serif !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    
+    /* The "Jewelry Box" Border */
+    border: 1px solid #d4af37 !important; /* Bright Gold Border */
+    border-left: 6px solid #d4af37 !important; /* Thicker "Accent" on the left */
+    border-radius: 2px !important;        /* Slightly softened corners */
+    
+    /* Golden Glow Shadow */
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15) !important;
+}
+
+/* 2. The Progress Bar (Timer) */
+.Toastify__progress-bar {
+    background: linear-gradient(to right, #d4af37, #c5a059) !important; /* Gold Gradient Line */
+    height: 3px !important;
+    opacity: 1 !important;
+}
+
+/* 3. The Icons (Checkmark / Info / Error) */
+.Toastify__toast-icon > svg {
+    fill: #d4af37 !important; /* Pure Metallic Gold Icon */
+    filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); /* Slight 3D effect on icon */
+}
+
+/* 4. The Close Button (X) */
+.Toastify__close-button {
+    color: #8a6d3b !important;
+    opacity: 0.5;
+}
+.Toastify__close-button:hover {
+    color: #d4af37 !important;
+    opacity: 1;
+}
+
+/* ✅ ADD THIS INSTEAD (Forces Gold Icon on Errors) */
+.Toastify__toast--error .Toastify__toast-icon > svg {
+    fill: #d4af37 !important; /* Forces the icon back to Metallic Gold */
+}
