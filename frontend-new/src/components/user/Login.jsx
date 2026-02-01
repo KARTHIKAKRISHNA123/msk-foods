@@ -18,18 +18,35 @@ export default function Login() {
 
     const submitHandler = (e) => {
         e.preventDefault();
+
+        // ✨ CUSTOM VALIDATION (Top Center)
+        if (!email) {
+            toast.error("Please enter your email address.", { 
+                position: "top-center", // 👈 Changed to Top Center
+                theme: "colored" 
+            });
+            return;
+        }
+        if (!password) {
+            toast.error("Please enter your password.", { 
+                position: "top-center", // 👈 Changed to Top Center
+                theme: "colored" 
+            });
+            return;
+        }
+
         dispatch(login(email, password));
     }
 
     useEffect(() => {
         if (error) {
-            toast.error(error, { position: "bottom-center", theme: "colored" });
+            toast.error(error, { position: "top-center", theme: "colored" }); // 👈 Changed to Top Center
             dispatch(clearError());
             return;
         }
         if (isAuthenticated) {
             navigate('/');
-            toast.success("Welcome back.", { position: "bottom-center", theme: "colored" });
+            toast.success("Welcome back.", { position: "top-center", theme: "colored" }); // 👈 Changed to Top Center
         }
     }, [error, isAuthenticated, dispatch, navigate]);
 
@@ -39,7 +56,6 @@ export default function Login() {
         <Fragment>
             <MetaData title={`Member Access`} />
 
-            {/* ATMOSPHERE: The Golden Glow */}
             <div 
                 className="row wrapper justify-content-center align-items-center" 
                 style={{ 
@@ -53,8 +69,6 @@ export default function Login() {
                 }}
             >
                 <div className="col-11 col-md-6 col-lg-4">
-                    
-                    {/* CARD CONTAINER */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -65,11 +79,10 @@ export default function Login() {
                             borderRadius: '2px', 
                             borderTop: '6px solid #c5a059', 
                             boxShadow: '0 30px 60px rgba(15, 66, 15, 0.08)',
-                            position: 'relative', // Necessary for the inner frame
-                            overflow: 'hidden'    // Keeps animations clean
+                            position: 'relative', 
+                            overflow: 'hidden'    
                         }}
                     >
-                        {/* ✨ THE CEREMONIAL FRAME (Draws itself inside) */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -77,15 +90,15 @@ export default function Login() {
                             style={{
                                 position: 'absolute',
                                 top: '15px', left: '15px', right: '15px', bottom: '15px',
-                                border: '1px solid rgba(197, 160, 89, 0.2)', // Very subtle inner line
+                                border: '1px solid rgba(197, 160, 89, 0.2)', 
                                 pointerEvents: 'none',
                                 zIndex: 0
                             }}
                         />
 
-                        <form onSubmit={submitHandler} className="p-5" style={{ position: 'relative', zIndex: 1 }}>
+                        {/* ✨ ADDED 'noValidate' to disable default browser bubble */}
+                        <form onSubmit={submitHandler} noValidate className="p-5" style={{ position: 'relative', zIndex: 1 }}>
                             
-                            {/* HEADER: Staggered Entrance */}
                             <div className="text-center mb-5">
                                 <motion.h1 
                                     initial={{ opacity: 0, y: 10 }}
@@ -110,7 +123,6 @@ export default function Login() {
                                 </motion.p>
                             </div>
 
-                            {/* INPUTS: Gold Underlines */}
                             <div className="form-group mb-4">
                                 <label htmlFor="email_field" className="fw-bold mb-2 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Email Address</label>
                                 <input
@@ -131,7 +143,7 @@ export default function Login() {
                                     onBlur={(e) => e.target.style.borderBottom = '1px solid rgba(197, 160, 89, 0.3)'}
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
-                                    required
+                                    // ✨ Removed 'required' attribute (handled manually now)
                                 />
                             </div>
 
@@ -155,7 +167,7 @@ export default function Login() {
                                     onBlur={(e) => e.target.style.borderBottom = '1px solid rgba(197, 160, 89, 0.3)'}
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
-                                    required
+                                    // ✨ Removed 'required' attribute
                                 />
                             </div>
 
@@ -165,7 +177,6 @@ export default function Login() {
                                 </Link>
                             </div>
 
-                            {/* BUTTON: "ENTER" */}
                             <motion.button
                                 id="login_button"
                                 type="submit"
