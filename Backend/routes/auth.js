@@ -2,23 +2,25 @@ import express from "express";
 import { authorizeRoles, isAuthenticatedUser } from "../middlewares/authenticate.js";
 import multer from "multer";
 import path from "path";
-import { fileURLToPath } from 'url'; // ✨ Required for __dirname fix
+import { fileURLToPath } from 'url';
 
-// ✨ Define __dirname for ES Modules
+// Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 
 const upload = multer({
-    // ✨ Changed to diskStorage so it saves to your folder
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            // Ensure you create this folder: backend/uploads/user
+            // Ensure this folder exists: backend/uploads/user
             cb(null, path.join(__dirname, '..', "uploads/user"))
         },
         filename: function(req, file, cb) {
-            cb(null, file.originalname);
+            // ✨ UNIQUE FILENAME FIX:
+            // Adds a timestamp to the filename so duplicates don't overwrite each other
+            // Example result: 171543299-avatar.jpg
+            cb(null, Date.now() + '-' + file.originalname);
         }
     })
 });

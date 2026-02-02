@@ -57,7 +57,31 @@ const authSlice = createSlice({
                 loading: false,
                 error: action.payload
             }
+        },
+        loadUserRequest(state, action) {
+            return {
+                ...state,
+                isAuthenticated: false,
+                loading: true,
+            }
+        },
+        loadUserSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: true,
+                user: action.payload.user
+            }
+        },
+        loadUserFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
         }
+
+    
     }
 });
 
@@ -70,7 +94,10 @@ export const {
     clearError,
     registerRequest,
     registerSuccess,
-    registerFail
+    registerFail,
+    loadUserRequest,
+    loadUserSuccess,
+    loadUserFail
 } = actions;
 
 export default reducer;
@@ -91,20 +118,30 @@ export const login = (email, password) => async (dispatch) => {
 // ... existing login thunk ...
 
 // --- REGISTER THUNK (Add this) ---
+// --- REGISTER THUNK ---
 export const register = (userData) => async (dispatch) => {
     try {
         dispatch(registerRequest());
         
-        // Config is important for images!
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }
-
-        const { data } = await axios.post('/api/v1/register', userData, config);
+        // 👇 CHANGE: Do NOT manually set Content-Type for FormData.
+        // Let Axios and the browser handle the boundary automatically.
+        const { data } = await axios.post('/api/v1/register', userData);
+        
         dispatch(registerSuccess(data));
     } catch (error) {
         dispatch(registerFail(error.response.data.message || error.message));
+    }
+};
+
+
+// --- LOAD USER THUNK ---
+export const loadUser = () => async (dispatch) => {
+    try {
+        dispatch(loadUserRequest());
+        // This request sends the cookie automatically to check session
+        const { data } = await axios.get('/api/v1/myprofile');
+        dispatch(loadUserSuccess(data));
+    } catch (error) {
+        dispatch(loadUserFail(error.response.data.message));
     }
 };

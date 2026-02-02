@@ -7,15 +7,13 @@ import crypto from 'crypto';
 
 //Register a user - /api/v1/register
 export const registerUser = catchAsyncErrors(async(req, res, next) => {
-    // ✨ Handle multipart data (images) correctly
     const { name, email, password } = req.body;
     let avatar;
 
     if (req.file) {
-        // ✨ FIXED: Use req.get('host') to include the port (e.g., localhost:8000)
-        // ✨ FIXED: Removed duplicate ${req.host}
+        // ✨ FIXED: Use req.file.filename (Unique Name) instead of originalname
         const baseUrl = `${req.protocol}://${req.get('host')}`;
-        avatar = `${baseUrl}/uploads/user/${req.file.originalname}`;
+        avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
     }
 
     const user = await User.create({
@@ -161,10 +159,10 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         email: req.body.email
     };
 
-    // ✨ FIXED: Logic to handle Avatar Update
+    // ✨ FIXED: Use req.file.filename here too for profile updates
     if (req.file) {
         const baseUrl = `${req.protocol}://${req.get('host')}`;
-        newUserData.avatar = `${baseUrl}/uploads/user/${req.file.originalname}`;
+        newUserData.avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
     }
 
     const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
