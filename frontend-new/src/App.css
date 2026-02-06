@@ -463,3 +463,61 @@ input:-webkit-autofill:active {
 .Toastify__toast--error .Toastify__toast-icon > svg {
     fill: #d4af37 !important; /* Forces the icon back to Metallic Gold */
 }
+
+/* --- Custom Dropdown Styles --- */
+
+/* Change the background color on Hover and Focus */
+.dropdown-item:hover, 
+.dropdown-item:focus {
+    background-color: #c5a059 !important; /* MSK Gold */
+    color: #ffffff !important; /* White text for contrast */
+}
+
+/* Change the background color when Active (Clicked) */
+.dropdown-item.active, 
+.dropdown-item:active {
+    background-color: #c5a059 !important;
+    color: #ffffff !important;
+}
+
+/* --- HEADER DROPDOWN STYLING --- */
+
+/* 1. Username Text ("KK") -> Gold */
+#dropdown-basic {
+    color: #c5a059 !important; /* MSK Gold */
+    font-weight: 700; /* Bold */
+}
+
+/* 2. The "Square" Focus Ring around Avatar -> Gold Glow */
+.btn-default:focus, 
+.dropdown-toggle:focus,
+.btn-default:active:focus {
+    box-shadow: 0 0 0 2px #c5a059 !important; /* Gold Border */
+    border-color: #c5a059 !important;
+}
+
+/* 3. The Dropdown Menu Box -> Dark Green Background with Gold Border */
+.dropdown-menu {
+    background-color: #0f420f !important; /* MSK Dark Green */
+    border: 1px solid #c5a059 !important; /* Gold Border */
+    padding: 0; /* Remove default padding for cleaner look */
+}
+
+/* 4. The Dropdown Items (Profile, Orders, Logout) -> Gold Text */
+.dropdown-item {
+    color: #c5a059 !important; /* Gold Text */
+    padding: 10px 20px; /* More breathing room */
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2); /* Faint gold separator */
+}
+
+/* Remove border from last item */
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+/* 5. Hover State -> Gold Background, Dark Green Text */
+.dropdown-item:hover, 
+.dropdown-item:focus {
+    background-color: #c5a059 !important; /* Gold Background */
+    color: #0f420f !important; /* Dark Green Text */
+}

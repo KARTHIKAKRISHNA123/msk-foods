@@ -79,7 +79,23 @@ const authSlice = createSlice({
                 loading: false,
                 error: action.payload
             }
+        },
+        logoutSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: false,
+                user: null
+            }
+        },
+        logoutFail(state, action) {
+            return {
+                ...state,
+                
+                error: action.payload
+            }
         }
+
 
     
     }
@@ -97,7 +113,9 @@ export const {
     registerFail,
     loadUserRequest,
     loadUserSuccess,
-    loadUserFail
+    loadUserFail,
+    logoutSuccess,
+    logoutFail
 } = actions;
 
 export default reducer;
@@ -143,5 +161,17 @@ export const loadUser = () => async (dispatch) => {
         dispatch(loadUserSuccess(data));
     } catch (error) {
         dispatch(loadUserFail(error.response.data.message));
+    }
+};
+
+
+export const logout = () => async (dispatch) => {
+    try {
+        
+        // This request sends the cookie automatically to check session
+        await axios.get('/api/v1/logout');
+        dispatch(logoutSuccess());
+    } catch (error) {
+        dispatch(logoutFail(error.response.data.message || error.message));
     }
 };
