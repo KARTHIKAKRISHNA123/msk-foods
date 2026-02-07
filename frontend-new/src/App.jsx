@@ -14,6 +14,9 @@ import Login from './components/user/Login';
 import Register from './components/user/Register';
 import ScrollToTop from './components/layouts/ScrollToTop';
 import { loadUser } from './slices/authSlice';
+import Profile from "./components/user/Profile";
+import ProtectedRoute from './components/route/ProtectedRoutes';
+import UpdateProfile from './components/user/UpdateProfile';
 import './App.css';
 
 function App() {
@@ -40,6 +43,8 @@ function App() {
                 <Route path='/product/:id' element={<ProductDetails/>} />
                 <Route path='/login' element={<Login/>} />
                 <Route path='/register' element={<Register/>} />
+                <Route path='/myprofile' element={<ProtectedRoute><Profile/></ProtectedRoute>} />
+                <Route path='/myprofile/update' element={<ProtectedRoute><UpdateProfile/></ProtectedRoute>} />
             </Routes>
           </div>
           

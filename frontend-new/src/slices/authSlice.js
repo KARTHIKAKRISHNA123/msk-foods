@@ -94,6 +94,29 @@ const authSlice = createSlice({
                 
                 error: action.payload
             }
+        },
+        updateProfileRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+                isUpdated: false
+            }
+        },
+        updateProfileSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: true,
+                user: action.payload.user,
+                isUpdated: true
+            }
+        },
+        updateProfileFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
         }
 
 
@@ -115,7 +138,10 @@ export const {
     loadUserSuccess,
     loadUserFail,
     logoutSuccess,
-    logoutFail
+    logoutFail,
+    updateProfileRequest,
+    updateProfileSuccess,
+    updateProfileFail
 } = actions;
 
 export default reducer;
@@ -175,3 +201,19 @@ export const logout = () => async (dispatch) => {
         dispatch(logoutFail(error.response.data.message || error.message));
     }
 };
+
+
+export const update = (userData) => async (dispatch) => {
+    try {
+        dispatch(updateProfileRequest());
+        
+        // 👇 CHANGE: Do NOT manually set Content-Type for FormData.
+        // Let Axios and the browser handle the boundary automatically.
+        const { data } = await axios.put('/api/v1/update', userData);
+        
+        dispatch(updateProfileSuccess(data));
+    } catch (error) {
+        dispatch(updateProfileFail(error.response.data.message || error.message));
+    }
+};
+
