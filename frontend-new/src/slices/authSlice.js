@@ -117,7 +117,32 @@ const authSlice = createSlice({
                 loading: false,
                 error: action.payload
             }
+        },
+        updatePasswordRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+                isUpdated: false
+            }
+        },
+        updatePasswordSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                
+                
+                isUpdated: true
+            }
+        },
+        updatePasswordFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
         }
+
+
 
 
     
@@ -141,7 +166,10 @@ export const {
     logoutFail,
     updateProfileRequest,
     updateProfileSuccess,
-    updateProfileFail
+    updateProfileFail,
+    updatePasswordRequest,
+    updatePasswordSuccess,
+    updatePasswordFail
 } = actions;
 
 export default reducer;
@@ -214,6 +242,21 @@ export const update = (userData) => async (dispatch) => {
         dispatch(updateProfileSuccess(data));
     } catch (error) {
         dispatch(updateProfileFail(error.response.data.message || error.message));
+    }
+};
+
+
+export const changePassword = (userData) => async (dispatch) => {
+    try {
+        dispatch(updatePasswordRequest());
+        
+        // 👇 CHANGE: Do NOT manually set Content-Type for FormData.
+        // Let Axios and the browser handle the boundary automatically.
+        await axios.put('/api/v1/password/change', userData);
+        
+        dispatch(updatePasswordSuccess());
+    } catch (error) {
+        dispatch(updatePasswordFail(error.response.data.message || error.message));
     }
 };
 
