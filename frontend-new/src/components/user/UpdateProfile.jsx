@@ -83,7 +83,7 @@ export default function UpdateProfile() {
             <div 
                 className="row wrapper justify-content-center align-items-center" 
                 style={{ 
-                    minHeight: '90vh', 
+                    minHeight: '85vh',  // Reduced from 90vh
                     margin: 0,
                     background: '#fdfbf7', 
                     backgroundImage: `
@@ -122,10 +122,11 @@ export default function UpdateProfile() {
                             }}
                         />
 
-                        <form onSubmit={submitHandler} encType='multipart/form-data' className="p-5" style={{ position: 'relative', zIndex: 1 }}>
+                        {/* Reduced padding from p-5 to p-4 */}
+                        <form onSubmit={submitHandler} encType='multipart/form-data' className="p-4" style={{ position: 'relative', zIndex: 1 }}>
                             
-                            {/* HEADER */}
-                            <div className="text-center mb-5">
+                            {/* HEADER - Reduced margin from mb-5 to mb-3 */}
+                            <div className="text-center mb-3">
                                 <motion.h1 
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -135,14 +136,13 @@ export default function UpdateProfile() {
                                 >
                                     Update Profile
                                 </motion.h1>
-                                <div style={{ width: '40px', height: '2px', background: '#c5a059', margin: '0 auto 15px auto', opacity: 0.7 }}></div>
+                                <div style={{ width: '40px', height: '2px', background: '#c5a059', margin: '0 auto 10px auto', opacity: 0.7 }}></div>
                             </div>
 
-                            {/* CENTERED AVATAR "MEDALLION" */}
-                            <div className="d-flex flex-column align-items-center mb-5">
+                            {/* CENTERED AVATAR - Reduced margin from mb-5 to mb-4 */}
+                            <div className="d-flex flex-column align-items-center mb-4">
                                 <div style={{ position: 'relative', width: '100px', height: '100px', marginBottom: '15px' }}>
                                     
-                                    {/* 👇 3. ADD onError HANDLER */}
                                     <img 
                                         src={avatarPreview} 
                                         alt="Avatar Preview"
@@ -191,15 +191,15 @@ export default function UpdateProfile() {
                                 </span>
                             </div>
 
-                            {/* NAME INPUT */}
-                            <div className="form-group mb-4">
-                                <label htmlFor="name_field" className="fw-bold mb-2 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Full Name</label>
+                            {/* NAME INPUT - Reduced margin from mb-4 to mb-3 */}
+                            <div className="form-group mb-3">
+                                <label htmlFor="name_field" className="fw-bold mb-1 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Full Name</label>
                                 <input
                                     type="name"
                                     id="name_field"
                                     className="form-control"
                                     name='name'
-                                    style={{ border: 'none', borderBottom: '1px solid rgba(197, 160, 89, 0.3)', borderRadius: '0', padding: '10px 0', background: 'transparent' }}
+                                    style={{ border: 'none', borderBottom: '1px solid rgba(197, 160, 89, 0.3)', borderRadius: '0', padding: '8px 0', background: 'transparent' }}
                                     onFocus={(e) => e.target.style.borderBottom = '1px solid #c5a059'}
                                     onBlur={(e) => e.target.style.borderBottom = '1px solid rgba(197, 160, 89, 0.3)'}
                                     value={name}
@@ -207,15 +207,15 @@ export default function UpdateProfile() {
                                 />
                             </div>
 
-                            {/* EMAIL INPUT */}
-                            <div className="form-group mb-5">
-                                <label htmlFor="email_field" className="fw-bold mb-2 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Email Address</label>
+                            {/* EMAIL INPUT - Reduced margin from mb-5 to mb-4 */}
+                            <div className="form-group mb-4">
+                                <label htmlFor="email_field" className="fw-bold mb-1 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Email Address</label>
                                 <input
                                     type="email"
                                     id="email_field"
                                     className="form-control"
                                     name='email'
-                                    style={{ border: 'none', borderBottom: '1px solid rgba(197, 160, 89, 0.3)', borderRadius: '0', padding: '10px 0', background: 'transparent' }}
+                                    style={{ border: 'none', borderBottom: '1px solid rgba(197, 160, 89, 0.3)', borderRadius: '0', padding: '8px 0', background: 'transparent' }}
                                     onFocus={(e) => e.target.style.borderBottom = '1px solid #c5a059'}
                                     onBlur={(e) => e.target.style.borderBottom = '1px solid rgba(197, 160, 89, 0.3)'}
                                     value={email}

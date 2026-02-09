@@ -103,7 +103,7 @@ export default function Profile() {
                                 </Link>
 
                                 <Link 
-                                    to="/password/change" 
+                                    to="/myprofile/update/password" 
                                     className="btn flex-grow-1"
                                     style={{ 
                                         backgroundColor: '#c5a059', // Gold (Matches Edit Profile)

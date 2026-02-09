@@ -140,6 +140,56 @@ const authSlice = createSlice({
                 loading: false,
                 error: action.payload
             }
+        },
+        forgotPasswordRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+                
+            }
+        },
+        forgotPasswordSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                message: action.payload
+                
+                
+                
+            }
+        },
+        forgotPasswordFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
+        },
+
+        resetPasswordRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+                
+            }
+        },
+        resetPasswordSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                isAuthenticated: true,
+                user: action.payload.user,
+                
+                
+                
+            }
+        },
+        resetPasswordFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
         }
 
 
@@ -169,7 +219,13 @@ export const {
     updateProfileFail,
     updatePasswordRequest,
     updatePasswordSuccess,
-    updatePasswordFail
+    updatePasswordFail,
+    forgotPasswordRequest,
+    forgotPasswordSuccess,
+    forgotPasswordFail,
+    resetPasswordRequest,
+    resetPasswordSuccess,
+    resetPasswordFail
 } = actions;
 
 export default reducer;
@@ -260,3 +316,31 @@ export const changePassword = (userData) => async (dispatch) => {
     }
 };
 
+
+export const forgotPassword = (userData) => async (dispatch) => {
+    try {
+        dispatch(forgotPasswordRequest());
+        
+        // 👇 CHANGE: Do NOT manually set Content-Type for FormData.
+        // Let Axios and the browser handle the boundary automatically.
+        const { data } = await axios.put('/api/v1/password/forgot', userData);
+        
+        dispatch(forgotPasswordSuccess(data));
+    } catch (error) {
+        dispatch(forgotPasswordFail(error.response.data.message || error.message));
+    }
+};
+
+export const resetPassword = (userData) => async (dispatch) => {
+    try {
+        dispatch(resetPasswordRequest());
+        
+        // 👇 CHANGE: Do NOT manually set Content-Type for FormData.
+        // Let Axios and the browser handle the boundary automatically.
+        const { data } = await axios.put('/api/v1/password/reset', userData);
+        
+        dispatch(resetPasswordSuccess(data));
+    } catch (error) {
+        dispatch(resetPasswordFail(error.response.data.message || error.message));
+    }
+};
