@@ -73,7 +73,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
 
     //Create reset password url
-    const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
 
     const message = `Your password reset token is as follow:\n\n${resetUrl}\n\nIf you have not requested this email, then please ignore it.`;
 
@@ -99,13 +99,16 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
 
 //Reset Password - /api/v1/password/reset/:token
+//Reset Password - /api/v1/password/reset/:token
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
+    // 1. Hash the token from the URL
     const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+
+    // 2. Find user with that token AND check if it hasn't expired
+    // ✅ Uses 'resetPasswordTokenExpire' to match your User Model
     const user = await User.findOne({
         resetPasswordToken,
-        resetPasswordTokenExpire: {
-            $gt: Date.now()
-        }
+        resetPasswordTokenExpire: { $gt: Date.now() } 
     });
 
     if (!user) {
@@ -116,10 +119,16 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler("Password does not match", 400));
     }
 
+    // 3. Set new password
+    // Because of your pre('save') hook, this will be automatically hashed!
     user.password = req.body.password;
+    
+    // 4. Clear reset token fields so they can't be used again
     user.resetPasswordToken = undefined;
     user.resetPasswordTokenExpire = undefined;
-    await user.save({ validateBeforeSave: false });
+
+    // 5. Save (triggers the hashing middleware)
+    await user.save();
 
     sendToken(user, 201, res);
 });

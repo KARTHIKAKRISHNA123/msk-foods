@@ -11,7 +11,7 @@ export default function ProtectedRoute ({children, isAdmin}) {
     }
 
     // 2. If finished loading and NOT authenticated, kick them to Login
-    if(!isAuthenticated) {
+    if(!isAuthenticated && !loading) {
         return <Navigate to="/login" />
     }
 

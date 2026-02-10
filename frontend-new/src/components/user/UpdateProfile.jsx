@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { update, clearError } from '../../slices/authSlice';
+import { update, clearError, clearUpdateProfile } from '../../slices/authSlice';
 import MetaData from '../layouts/MetaData';
 import { motion } from 'framer-motion';
 
@@ -37,7 +37,7 @@ export default function UpdateProfile() {
                 type: 'success',
                 position: "top-center",
                 theme: "colored",
-                onOpen: () => dispatch(clearError())
+                onOpen: () => dispatch(clearUpdateProfile())
             });
             navigate('/myprofile');
             return;
