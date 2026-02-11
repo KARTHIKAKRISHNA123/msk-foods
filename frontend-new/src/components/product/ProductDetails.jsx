@@ -46,10 +46,15 @@ export default function ProductDetails() {
     }, [dispatch, id, error, products]);
 
     const increaseQty = () => {
-        if (product && product.stock <= quantity) return;
+        //console.log("Current quantity:", quantity, "| Available Stock:", product.stock);
+
+        // A safer way to write the condition
+        if (!product || quantity >= Number(product.stock)) {
+            return; 
+        }
         setQuantity(quantity + 1);
     }
-
+    
     const decreaseQty = () => {
         if (1 >= quantity) return;
         setQuantity(quantity - 1);
@@ -93,7 +98,8 @@ export default function ProductDetails() {
         <Fragment>
             <MetaData title={product.name} />
             
-            <div style={{ background: '#fdfbf7', overflowX: 'hidden', backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}>
+            {/* ✨ FIXED: Updated background to richer Royal Soft Gold (#F4E7CE) */}
+            <div style={{ backgroundColor: '#F4E7CE', overflowX: 'hidden', backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}>
 
                 {/* BACK BUTTON */}
                 <div className="container pt-4">
@@ -151,7 +157,10 @@ export default function ProductDetails() {
                                 <span className="me-3 text-uppercase" style={{ letterSpacing: '1px', fontSize: '0.9rem', color: '#555' }}>Quantity:</span>
                                 <div className="stockCounter d-flex align-items-center" style={{ border: '1px solid #c5a059', borderRadius: '0', padding: '8px 15px', background: '#fff' }}>
                                     <span className="btn btn-sm" onClick={decreaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>-</span>
-                                    <input type="number" className="form-control count border-0 text-center" value={quantity} readOnly style={{ width: '50px', fontWeight: 'bold', background: 'transparent', fontSize: '1.1rem' }} />
+                                    
+                                    {/* ✨ FIXED: Width increased to 70px and padding 0 so double-digit numbers fit perfectly */}
+                                    <input type="number" className="form-control count border-0 text-center" value={quantity} readOnly style={{ width: '70px', padding: '0', fontWeight: 'bold', background: 'transparent', fontSize: '1.1rem' }} />
+                                    
                                     <span className="btn btn-sm" onClick={increaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>+</span>
                                 </div>
                             </div>
@@ -194,43 +203,42 @@ export default function ProductDetails() {
                 </div>
 
                 {/* --- TRUST BADGES --- */}
-                {/* --- TRUST BADGES (Updated to Match "Suitable For" Style) --- */}
-<section className="container mb-5">
-    <div className="row g-4 justify-content-center">
-        {[
-            { 
-                icon: <i className="fa fa-leaf fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                title: "100% Natural", 
-                subtitle: "No Artificial Flavors" 
-            },
-            { 
-                icon: <i className="fa fa-ban fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                title: "No Preservatives", 
-                subtitle: "Clean Label" 
-            },
-            { 
-                icon: <i className="fa fa-certificate fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                title: "Premium Quality", 
-                subtitle: "Export Standard" 
-            }
-        ].map((badge, index) => (
-            <motion.div 
-                key={index}
-                className="col-md-4" // Uses 3 columns (larger cards)
-                whileHover={{ scale: 1.05 }}
-            >
-                <div 
-                    className="p-4 text-center h-100 shadow-sm" 
-                    style={{ background: '#fff', borderRadius: '0' }}
-                >
-                    {badge.icon}
-                    <h5 className="fw-bold" style={{ color: '#0f420f', fontSize: '1rem' }}>{badge.title}</h5>
-                    <p className="small text-muted mb-0">{badge.subtitle}</p>
-                </div>
-            </motion.div>
-        ))}
-    </div>
-</section>
+                <section className="container mb-5">
+                    <div className="row g-4 justify-content-center">
+                        {[
+                            { 
+                                icon: <i className="fa fa-leaf fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
+                                title: "100% Natural", 
+                                subtitle: "No Artificial Flavors" 
+                            },
+                            { 
+                                icon: <i className="fa fa-ban fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
+                                title: "No Preservatives", 
+                                subtitle: "Clean Label" 
+                            },
+                            { 
+                                icon: <i className="fa fa-certificate fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
+                                title: "Premium Quality", 
+                                subtitle: "Export Standard" 
+                            }
+                        ].map((badge, index) => (
+                            <motion.div 
+                                key={index}
+                                className="col-md-4" 
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <div 
+                                    className="p-4 text-center h-100 shadow-sm" 
+                                    style={{ background: '#fff', borderRadius: '0' }}
+                                >
+                                    {badge.icon}
+                                    <h5 className="fw-bold" style={{ color: '#0f420f', fontSize: '1rem' }}>{badge.title}</h5>
+                                    <p className="small text-muted mb-0">{badge.subtitle}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </section>
 
                 {/* --- BENEFITS --- */}
                 <section className="container mb-5">
@@ -340,7 +348,8 @@ export default function ProductDetails() {
                 </section>
 
                 {/* --- SUITABLE FOR --- */}
-                <section className="py-5" style={{ background: '#fff' }}>
+                {/* ✨ FIXED: Softer, translucent gradient instead of stark white block to match the gold */}
+                <section className="py-5" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.3) 100%)' }}>
                     <div className="container text-center">
                          <h3 className="fw-bold mb-5" style={{ color: '#0f420f', letterSpacing: '2px' }}>SUITABLE FOR</h3>
                          <div className="row justify-content-center g-4">

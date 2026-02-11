@@ -53,6 +53,17 @@ export const {
 export default reducer;
 
 
+// // --- THUNK (The API Call) ---
+// export const getProducts = () => async (dispatch) => {
+//     try {
+//         dispatch(productsRequest());
+//         const { data } = await axios.get('/api/v1/products');
+//         dispatch(productsSuccess(data));
+//     } catch (error) {
+//         dispatch(productsFail(error.response.data.message || error.message));
+//     }
+// };
+
 // --- THUNK (The API Call) ---
 export const getProducts = () => async (dispatch) => {
     try {
@@ -60,6 +71,7 @@ export const getProducts = () => async (dispatch) => {
         const { data } = await axios.get('/api/v1/products');
         dispatch(productsSuccess(data));
     } catch (error) {
-        dispatch(productsFail(error.response.data.message || error.message));
+        // ✨ FIXED: Added '?.'. Now it safely checks before reading 'data'
+        dispatch(productsFail(error.response?.data?.message || error.message));
     }
 };
