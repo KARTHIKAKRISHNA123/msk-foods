@@ -202,7 +202,7 @@ export default function Login() {
                             <div className="mt-5 text-center">
                                 <span className="text-muted small" style={{ fontSize: '0.8rem' }}>New to MSK Foods? </span>
                                 <Link to="/register" style={{ color: '#c5a059', fontWeight: 'bold', textDecoration: 'none', borderBottom: '1px solid #c5a059', marginLeft: '8px', fontSize: '0.85rem' }}>
-                                    Begin the Tradition
+                                    Begin the Tradition Today 
                                 </Link>
                             </div>
                         </form>
