@@ -4,42 +4,37 @@ import axios from 'axios';
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
-        items: localStorage.getItem("cartItems") ? JSON.parse(localStorage.getItem("cartItems")): [],
+        items: localStorage.getItem("cartItems") ? JSON.parse(localStorage.getItem("cartItems")) : [],
         loading: false,
         error: null
     },
     reducers: {
         addCartItemRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-            }
+            // ✅ Mutation style (Safe)
+            state.loading = true;
         },
         addCartItemSuccess(state, action) {
             const item = action.payload;
             const isItemExist = state.items.find(i => i.product == item.product);
             
             if (isItemExist) {
-                state = {
-                    ...state,
-                    loading: false,
-                }
+                // ✅ FIX: Sum the quantities instead of replacing the item
+                state.items = state.items.map(i => 
+                    i.product == isItemExist.product 
+                    ? { ...i, quantity: i.quantity + item.quantity } // Add new qty to old qty
+                    : i
+                );
             } else {
-                state = {
-                    ...state,
-                    items: [...state.items, item],
-                    loading: false,
-                }
-                localStorage.setItem("cartItems", JSON.stringify(state.items));
+                state.items.push(item);
             }
-            return state;
+
+            localStorage.setItem("cartItems", JSON.stringify(state.items));
+            state.loading = false;
         },
-        addCartItemFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+                addCartItemFail(state, action) {
+            // ✅ Mutation style (Safe)
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
@@ -66,7 +61,7 @@ export const addToCart = (id, quantity) => async (dispatch) => {
             product: data.product._id,  
             name: data.product.name,
             price: data.product.price,
-            image: data.product.images[0].image, // ✨ FIXED: Changed from .url to .image
+            image: data.product.images[0].image, 
             stock: data.product.stock,
             quantity,
         };
@@ -74,7 +69,6 @@ export const addToCart = (id, quantity) => async (dispatch) => {
         dispatch(addCartItemSuccess(item));
         
     } catch (error) {
-        // ✨ FIXED: Added '?.'. Now it safely checks before reading 'data'
         dispatch(addCartItemFail(error.response?.data?.message || error.message));
     }
 };

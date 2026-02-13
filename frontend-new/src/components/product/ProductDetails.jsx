@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom'; 
 import { motion } from 'framer-motion';
 import { getProducts } from '../../slices/productsSlice'; 
-//import { addItemsToCart } from '../../actions/cartActions'; 
+// 👇 FIX 1: Import the correct thunk from your cartSlice
+import { addToCart } from '../../slices/cartSlice'; 
 import MetaData from '../layouts/MetaData';
 import Loader from '../layouts/Loader'; 
 import { toast } from 'react-toastify';
@@ -46,9 +47,6 @@ export default function ProductDetails() {
     }, [dispatch, id, error, products]);
 
     const increaseQty = () => {
-        //console.log("Current quantity:", quantity, "| Available Stock:", product.stock);
-
-        // A safer way to write the condition
         if (!product || quantity >= Number(product.stock)) {
             return; 
         }
@@ -61,7 +59,8 @@ export default function ProductDetails() {
     }
 
     const addToCartHandler = () => {
-        dispatch(addItemsToCart(product._id, quantity));
+        // 👇 FIX 2: Dispatch the correct action name 'addToCart'
+        dispatch(addToCart(product._id, quantity));
         toast.success('Item Added to Cart!', { position: 'top-center', theme: 'colored' });
     }
 
@@ -98,7 +97,6 @@ export default function ProductDetails() {
         <Fragment>
             <MetaData title={product.name} />
             
-            {/* ✨ FIXED: Updated background to richer Royal Soft Gold (#F4E7CE) */}
             <div style={{ backgroundColor: '#F4E7CE', overflowX: 'hidden', backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")' }}>
 
                 {/* BACK BUTTON */}
@@ -158,7 +156,6 @@ export default function ProductDetails() {
                                 <div className="stockCounter d-flex align-items-center" style={{ border: '1px solid #c5a059', borderRadius: '0', padding: '8px 15px', background: '#fff' }}>
                                     <span className="btn btn-sm" onClick={decreaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>-</span>
                                     
-                                    {/* ✨ FIXED: Width increased to 70px and padding 0 so double-digit numbers fit perfectly */}
                                     <input type="number" className="form-control count border-0 text-center" value={quantity} readOnly style={{ width: '70px', padding: '0', fontWeight: 'bold', background: 'transparent', fontSize: '1.1rem' }} />
                                     
                                     <span className="btn btn-sm" onClick={increaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>+</span>
@@ -348,7 +345,6 @@ export default function ProductDetails() {
                 </section>
 
                 {/* --- SUITABLE FOR --- */}
-                {/* ✨ FIXED: Softer, translucent gradient instead of stark white block to match the gold */}
                 <section className="py-5" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.3) 100%)' }}>
                     <div className="container text-center">
                          <h3 className="fw-bold mb-5" style={{ color: '#0f420f', letterSpacing: '2px' }}>SUITABLE FOR</h3>
