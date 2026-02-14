@@ -2,19 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
-//import { addItemsToCart } from '../../actions/cartActions'; // ✨ Fixed: Uncommented this so the button works
+// ✨ FIX: Import 'addToCart' from your slice, not the old actions file
+import { addToCart } from '../../slices/cartSlice'; 
 import { toast } from 'react-toastify';
 
 export default function Product({ product }) {
     const dispatch = useDispatch();
     
-    // Safety check: ensure images exist before checking length
     const hasBackImage = product.images && product.images.length > 1;
 
     const addToCartHandler = () => {
-        dispatch(addItemsToCart(product._id, 1));
+        // ✨ FIX: Use 'addToCart' thunk with Quantity 1
+        dispatch(addToCart(product._id, 1));
         toast.success('Item Added to Cart!', {
-            position: 'top-center', // ✨ Fixed: Changed to top-center to match your Royal theme preference
+            position: 'top-center',
             theme: "colored"
         });
     }
@@ -22,7 +23,7 @@ export default function Product({ product }) {
     return (
         <motion.section 
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }} 
+            whileInView={{ opacity: 1 }}    
             viewport={{ once: true }}    
             transition={{ duration: 0.8 }}
             className="container mt-5 mb-5"
@@ -200,7 +201,7 @@ export default function Product({ product }) {
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
                                     fontWeight: '600',
-                                    textDecoration: 'none' // Ensures the link looks exactly like a button
+                                    textDecoration: 'none' 
                                 }}
                             >
                                 Details

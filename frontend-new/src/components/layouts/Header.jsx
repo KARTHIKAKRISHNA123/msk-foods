@@ -6,13 +6,18 @@ import { logout } from "../../slices/authSlice";
 
 export default function Header() {
   const { isAuthenticated, user } = useSelector((state) => state.authState);
-  const cartItems = [];
+  const { items: cartItems } = useSelector((state) => state.cartState);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const logoutHandler = () => {
     dispatch(logout());
   };
+
+  // ✨ FIX: Calculate total quantity instead of array length
+  // This takes the accumulator (acc) and adds the current item's quantity to it, starting at 0.
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <nav className="navbar row">
@@ -39,9 +44,7 @@ export default function Header() {
               <figure className="avatar avatar-nav">
                 <Image
                   width="50px"
-                  // 1. Use || so it catches empty strings ""
                   src={user.avatar || "/images/default_avatar.png"}
-                  // 2. SAFETY NET: If the image fails to load, force the default
                   onError={(e) => {
                     e.target.src = "/images/default_avatar.png";
                   }}
@@ -51,19 +54,10 @@ export default function Header() {
               <span>{user.name}</span>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              {/* ✨ Removed 'text-dark' and 'text-danger' so App.css can turn them Gold */}
-              <Dropdown.Item
-                onClick={() => {
-                  navigate("/myprofile");
-                }}
-              >
+              <Dropdown.Item onClick={() => { navigate("/myprofile"); }}>
                 Profile
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => {
-                  navigate("/orders");
-                }}
-              >
+              <Dropdown.Item onClick={() => { navigate("/orders"); }}>
                 Orders
               </Dropdown.Item>
               <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>
@@ -80,7 +74,8 @@ export default function Header() {
             Cart
           </span>
           <span className="ml-1" id="cart_count">
-            {cartItems.length}
+            {/* ✨ FIX: Use the calculated total quantity */}
+            {cartCount}
           </span>
         </Link>
       </div>

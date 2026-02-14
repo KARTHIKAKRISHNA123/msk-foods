@@ -10,7 +10,6 @@ const cartSlice = createSlice({
     },
     reducers: {
         addCartItemRequest(state, action) {
-            // ✅ Mutation style (Safe)
             state.loading = true;
         },
         addCartItemSuccess(state, action) {
@@ -18,10 +17,10 @@ const cartSlice = createSlice({
             const isItemExist = state.items.find(i => i.product == item.product);
             
             if (isItemExist) {
-                // ✅ FIX: Sum the quantities instead of replacing the item
+                // ✅ Sum quantities (Works for both "Add to Cart" and "+/-" buttons)
                 state.items = state.items.map(i => 
                     i.product == isItemExist.product 
-                    ? { ...i, quantity: i.quantity + item.quantity } // Add new qty to old qty
+                    ? { ...i, quantity: i.quantity + item.quantity } 
                     : i
                 );
             } else {
@@ -31,10 +30,20 @@ const cartSlice = createSlice({
             localStorage.setItem("cartItems", JSON.stringify(state.items));
             state.loading = false;
         },
-                addCartItemFail(state, action) {
-            // ✅ Mutation style (Safe)
+        addCartItemFail(state, action) {
             state.loading = false;
             state.error = action.payload;
+        },
+        // ✨ NEW: Action to remove item from cart
+        removeItemFromCart(state, action) {
+            // Filter out the item that matches the ID passed in action.payload
+            const filterItems = state.items.filter(item => item.product !== action.payload);
+            
+            // Update LocalStorage
+            localStorage.setItem('cartItems', JSON.stringify(filterItems));
+            
+            // Update State
+            state.items = filterItems;
         }
     }
 });
@@ -44,7 +53,8 @@ const { actions, reducer } = cartSlice;
 export const { 
     addCartItemRequest,
     addCartItemSuccess,
-    addCartItemFail
+    addCartItemFail,
+    removeItemFromCart // 👈 Don't forget to export this!
 } = actions;
 
 export default reducer;
