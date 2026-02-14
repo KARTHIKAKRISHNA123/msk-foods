@@ -9,7 +9,12 @@ import auth from "./routes/auth.js";
 import order from "./routes/order.js";
 import errorHandler from "./middlewares/error.js";
 
+import payment from "./routes/payment.js";
+
+
 const app = express();
+
+
 
 // ✨ 1. Define __dirname for ES Modules (Fixes path issues)
 const __filename = fileURLToPath(import.meta.url);
@@ -26,6 +31,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/v1/", products);
 app.use("/api/v1/", auth);
 app.use("/api/v1/", order);
+app.use("/api/v1/", payment);
 
 // ✨ 4. Error Handler (MUST BE LAST)
 // Only use this once, after all routes are defined.

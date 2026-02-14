@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { clearError, login } from '../../slices/authSlice';
 import MetaData from '../layouts/MetaData';
 import { toast } from 'react-toastify';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Loader from '../layouts/Loader';
 import { motion } from 'framer-motion';
 
@@ -13,9 +13,10 @@ export default function Login() {
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const { loading, error, isAuthenticated } = useSelector(state => state.authState);
-
+    const redirect = location.search ? '/' + location.search.split('=')[1]:'/';
     const submitHandler = (e) => {
         e.preventDefault();
 
@@ -45,7 +46,7 @@ export default function Login() {
             return;
         }
         if (isAuthenticated) {
-            navigate('/');
+            navigate(redirect);
             toast.success("Welcome back.", { position: "top-center", theme: "colored" }); // 👈 Changed to Top Center
         }
     }, [error, isAuthenticated, dispatch, navigate]);
@@ -76,7 +77,7 @@ export default function Login() {
                         className="shadow-lg"
                         style={{ 
                             background: '#ffffff', 
-                            borderRadius: '2px', 
+                            borderRadius: '15px', // Changed to 15px
                             borderTop: '6px solid #c5a059', 
                             boxShadow: '0 30px 60px rgba(15, 66, 15, 0.08)',
                             position: 'relative', 
@@ -92,7 +93,8 @@ export default function Login() {
                                 top: '15px', left: '15px', right: '15px', bottom: '15px',
                                 border: '1px solid rgba(197, 160, 89, 0.2)', 
                                 pointerEvents: 'none',
-                                zIndex: 0
+                                zIndex: 0,
+                                borderRadius: '15px' // Changed to 15px to match parent
                             }}
                         />
 
@@ -188,7 +190,7 @@ export default function Login() {
                                     background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
                                     color: '#0f420f', 
                                     border: 'none', 
-                                    borderRadius: '0', 
+                                    borderRadius: '5px', // Changed to 5px
                                     letterSpacing: '3px', 
                                     textTransform: 'uppercase', 
                                     fontWeight: '700',

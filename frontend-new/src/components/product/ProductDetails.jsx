@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom'; 
 import { motion } from 'framer-motion';
 import { getProducts } from '../../slices/productsSlice'; 
-// 👇 FIX 1: Import the correct thunk from your cartSlice
 import { addToCart } from '../../slices/cartSlice'; 
 import MetaData from '../layouts/MetaData';
 import Loader from '../layouts/Loader'; 
@@ -19,7 +18,7 @@ const NursingIcon = () => (
 );
 
 const TrustBadge = ({ icon, title, subtitle }) => (
-    <div className="d-flex align-items-center gap-3 p-3" style={{ border: '1px solid rgba(197, 160, 89, 0.2)', background: '#fff' }}>
+    <div className="d-flex align-items-center gap-3 p-3" style={{ border: '1px solid rgba(197, 160, 89, 0.2)', background: '#fff', borderRadius: '15px' }}>
         <div style={{ color: '#c5a059', fontSize: '1.5rem' }}>{icon}</div>
         <div className="text-start">
             <h6 className="mb-0 fw-bold text-uppercase" style={{ fontSize: '0.8rem', letterSpacing: '1px', color: '#0f420f' }}>{title}</h6>
@@ -59,7 +58,6 @@ export default function ProductDetails() {
     }
 
     const addToCartHandler = () => {
-        // 👇 FIX 2: Dispatch the correct action name 'addToCart'
         dispatch(addToCart(product._id, quantity));
         toast.success('Item Added to Cart!', { position: 'top-center', theme: 'colored' });
     }
@@ -82,7 +80,7 @@ export default function ProductDetails() {
                 x: {
                     repeat: Infinity,
                     repeatType: "loop",
-                    duration: 35, // Slower speed
+                    duration: 35, 
                     ease: "linear",
                 },
             },
@@ -90,7 +88,6 @@ export default function ProductDetails() {
     };
 
     if (loading) return <Loader />;
-    
     if (!product) return null;
 
     return (
@@ -113,17 +110,14 @@ export default function ProductDetails() {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1 }}
                     >
-                        {/* 1. Brand Tagline */}
                         <span className="text-uppercase fw-bold" style={{ color: '#c5a059', letterSpacing: '3px' }}>
                             The Gold Standard
                         </span>
 
-                        {/* 2. Headline */}
                         <h1 className="display-3 fw-bold mt-2 mb-4" style={{ fontFamily: 'Playfair Display, serif', color: '#0f420f' }}>
                             Wholesome Nutrition,<br />Naturally Balanced.
                         </h1>
 
-                        {/* Product Image */}
                         <motion.div 
                             className="my-4 position-relative d-inline-block"
                             animate={{ y: [0, -15, 0] }} 
@@ -139,12 +133,10 @@ export default function ProductDetails() {
                             />
                         </motion.div>
 
-                        {/* 3. Product Name */}
                         <h2 className="mb-2" style={{ fontFamily: 'Playfair Display, serif', color: '#c5a059', fontSize: '2rem' }}>
                             {product.name}
                         </h2>
                         
-                        {/* 4. Price */}
                         <h3 className="mb-4" style={{ color: '#c5a059', fontFamily: 'Playfair Display, serif', fontWeight: 'bold', fontSize: '2.5rem' }}>
                             ₹{product.price}
                         </h3>
@@ -153,7 +145,7 @@ export default function ProductDetails() {
                         <div className="d-flex flex-column align-items-center gap-4 mb-5">
                              <div className="d-flex align-items-center justify-content-center">
                                 <span className="me-3 text-uppercase" style={{ letterSpacing: '1px', fontSize: '0.9rem', color: '#555' }}>Quantity:</span>
-                                <div className="stockCounter d-flex align-items-center" style={{ border: '1px solid #c5a059', borderRadius: '0', padding: '8px 15px', background: '#fff' }}>
+                                <div className="stockCounter d-flex align-items-center" style={{ border: '1px solid #c5a059', borderRadius: '30px', padding: '8px 15px', background: '#fff' }}>
                                     <span className="btn btn-sm" onClick={decreaseQty} style={{ fontSize: '1.2rem', color: '#0f420f', cursor: 'pointer' }}>-</span>
                                     
                                     <input type="number" className="form-control count border-0 text-center" value={quantity} readOnly style={{ width: '70px', padding: '0', fontWeight: 'bold', background: 'transparent', fontSize: '1.1rem' }} />
@@ -170,7 +162,7 @@ export default function ProductDetails() {
                                     backgroundColor: '#0f420f', 
                                     color: '#c5a059',
                                     border: '1px solid #0f420f',
-                                    borderRadius: '0',
+                                    borderRadius: '30px',
                                     textTransform: 'uppercase',
                                     letterSpacing: '3px',
                                     fontWeight: '600',
@@ -203,32 +195,13 @@ export default function ProductDetails() {
                 <section className="container mb-5">
                     <div className="row g-4 justify-content-center">
                         {[
-                            { 
-                                icon: <i className="fa fa-leaf fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                                title: "100% Natural", 
-                                subtitle: "No Artificial Flavors" 
-                            },
-                            { 
-                                icon: <i className="fa fa-ban fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                                title: "No Preservatives", 
-                                subtitle: "Clean Label" 
-                            },
-                            { 
-                                icon: <i className="fa fa-certificate fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                                title: "Premium Quality", 
-                                subtitle: "Export Standard" 
-                            }
+                            { icon: <i className="fa fa-leaf fs-1 mb-3"></i>, title: "100% Natural", subtitle: "No Artificial Flavors" },
+                            { icon: <i className="fa fa-ban fs-1 mb-3"></i>, title: "No Preservatives", subtitle: "Clean Label" },
+                            { icon: <i className="fa fa-certificate fs-1 mb-3"></i>, title: "Premium Quality", subtitle: "Export Standard" }
                         ].map((badge, index) => (
-                            <motion.div 
-                                key={index}
-                                className="col-md-4" 
-                                whileHover={{ scale: 1.05 }}
-                            >
-                                <div 
-                                    className="p-4 text-center h-100 shadow-sm" 
-                                    style={{ background: '#fff', borderRadius: '0' }}
-                                >
-                                    {badge.icon}
+                            <motion.div key={index} className="col-md-4" whileHover={{ scale: 1.05 }}>
+                                <div className="p-4 text-center h-100 shadow-sm" style={{ background: '#fff', borderRadius: '15px' }}>
+                                    <div style={{ color: '#c5a059' }}>{badge.icon}</div>
                                     <h5 className="fw-bold" style={{ color: '#0f420f', fontSize: '1rem' }}>{badge.title}</h5>
                                     <p className="small text-muted mb-0">{badge.subtitle}</p>
                                 </div>
@@ -239,21 +212,9 @@ export default function ProductDetails() {
 
                 {/* --- BENEFITS --- */}
                 <section className="container mb-5">
-                    <motion.div 
-                        className="row g-4"
-                        variants={staggerContainer}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                    >
-                        {/* Card 1 */}
+                    <motion.div className="row g-4" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }}>
                         <motion.div className="col-md-6" variants={fadeInUp}>
-                            <motion.div 
-                                className="p-5 h-100 shadow-sm" 
-                                style={{ background: '#fff', border: '1px solid rgba(197,160,89,0.3)' }}
-                                whileHover={{ y: -10, borderColor: '#c5a059', boxShadow: '0 15px 30px rgba(197,160,89,0.15)' }}
-                                transition={{ type: 'spring', stiffness: 300 }}
-                            >
+                            <motion.div className="p-5 h-100 shadow-sm" style={{ background: '#fff', border: '1px solid rgba(197, 160, 89, 0.3)', borderRadius: '15px' }} whileHover={{ y: -10, borderColor: '#c5a059', boxShadow: '0 15px 30px rgba(197,160,89,0.15)' }}>
                                 <i className="fa fa-heartbeat fs-1 mb-3" style={{ color: '#c5a059' }}></i>
                                 <h3 className="fw-bold mb-3" style={{ color: '#0f420f', fontFamily: 'Playfair Display, serif' }}>Supports Diabetic-Friendly Lifestyle</h3>
                                 <ul className="list-unstyled text-muted" style={{ lineHeight: '1.8' }}>
@@ -263,15 +224,8 @@ export default function ProductDetails() {
                                 </ul>
                             </motion.div>
                         </motion.div>
-
-                        {/* Card 2 */}
                         <motion.div className="col-md-6" variants={fadeInUp}>
-                            <motion.div 
-                                className="p-5 h-100 shadow-sm" 
-                                style={{ background: '#fff', border: '1px solid rgba(197,160,89,0.3)' }}
-                                whileHover={{ y: -10, borderColor: '#c5a059', boxShadow: '0 15px 30px rgba(197,160,89,0.15)' }}
-                                transition={{ type: 'spring', stiffness: 300 }}
-                            >
+                            <motion.div className="p-5 h-100 shadow-sm" style={{ background: '#fff', border: '1px solid rgba(197, 160, 89, 0.3)', borderRadius: '15px' }} whileHover={{ y: -10, borderColor: '#c5a059', boxShadow: '0 15px 30px rgba(197,160,89,0.15)' }}>
                                 <i className="fa fa-tint fs-1 mb-3" style={{ color: '#c5a059' }}></i>
                                 <h3 className="fw-bold mb-3" style={{ color: '#0f420f', fontFamily: 'Playfair Display, serif' }}>Heart Health & Blood Pressure</h3>
                                 <ul className="list-unstyled text-muted" style={{ lineHeight: '1.8' }}>
@@ -281,23 +235,12 @@ export default function ProductDetails() {
                                 </ul>
                             </motion.div>
                         </motion.div>
-
-                        {/* Card 3 (Dark) */}
                         <motion.div className="col-12" variants={fadeInUp}>
-                            <motion.div 
-                                className="p-5 shadow-sm position-relative overflow-hidden" 
-                                style={{ background: '#0f420f' }}
-                                whileHover={{ scale: 1.02 }}
-                                transition={{ type: 'spring', stiffness: 200 }}
-                            >
+                            <motion.div className="p-5 shadow-sm position-relative overflow-hidden" style={{ background: '#0f420f', borderRadius: '15px' }} whileHover={{ scale: 1.02 }}>
                                 <div className="row align-items-center">
                                     <div className="col-md-8 position-relative" style={{ zIndex: 2 }}>
-                                        <h3 className="display-5 fw-bold mb-3" style={{ color: '#c5a059', fontFamily: 'Playfair Display, serif' }}>
-                                            Includes Traditional Karuppu Kavuni Rice
-                                        </h3>
-                                        <p className="lead text-white-50">
-                                            Valued in traditional diets for its natural antioxidants. Adds depth of nutrition and heritage value to every scoop.
-                                        </p>
+                                        <h3 className="display-5 fw-bold mb-3" style={{ color: '#c5a059', fontFamily: 'Playfair Display, serif' }}>Includes Traditional Karuppu Kavuni Rice</h3>
+                                        <p className="lead text-white-50">Valued in traditional diets for its natural antioxidants. Adds depth of nutrition and heritage value to every scoop.</p>
                                     </div>
                                     <div className="col-md-4 text-center">
                                         <i className="fa fa-leaf display-1" style={{ color: 'rgba(197,160,89,0.2)' }}></i>
@@ -310,16 +253,8 @@ export default function ProductDetails() {
 
                 {/* --- DIRECTIONS --- */}
                 <section className="container py-5">
-                    <motion.div 
-                        initial="hidden" 
-                        whileInView="visible" 
-                        viewport={{ once: true }} 
-                        variants={fadeInUp}
-                    >
-                        <h2 className="text-center display-4 fw-bold mb-5" style={{ color: '#0f420f', fontFamily: 'Playfair Display, serif' }}>
-                            Ritual of Preparation
-                        </h2>
-                        
+                    <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
+                        <h2 className="text-center display-4 fw-bold mb-5" style={{ color: '#0f420f', fontFamily: 'Playfair Display, serif' }}>Ritual of Preparation</h2>
                         <div className="row justify-content-center">
                             <div className="col-lg-8">
                                 {[
@@ -329,12 +264,7 @@ export default function ProductDetails() {
                                     "Add jaggery or salt as preferred.",
                                     "Serve hot for best taste and nutrition."
                                 ].map((step, index) => (
-                                    <motion.div 
-                                        key={index}
-                                        className="d-flex align-items-center mb-4 p-3"
-                                        whileHover={{ x: 10, backgroundColor: 'rgba(197,160,89,0.1)' }}
-                                        style={{ borderLeft: '4px solid #c5a059', background: '#fff' }}
-                                    >
+                                    <motion.div key={index} className="d-flex align-items-center mb-4 p-3 shadow-sm" whileHover={{ x: 10, backgroundColor: 'rgba(197,160,89,0.1)' }} style={{ borderLeft: '4px solid #c5a059', background: '#fff', borderRadius: '0 15px 15px 0' }}>
                                         <span className="display-6 fw-bold me-4" style={{ color: 'rgba(15, 66, 15, 0.2)' }}>0{index + 1}</span>
                                         <p className="mb-0 lead" style={{ color: '#0f420f' }}>{step}</p>
                                     </motion.div>
@@ -350,28 +280,12 @@ export default function ProductDetails() {
                          <h3 className="fw-bold mb-5" style={{ color: '#0f420f', letterSpacing: '2px' }}>SUITABLE FOR</h3>
                          <div className="row justify-content-center g-4">
                             {[
-                                { 
-                                    renderIcon: () => <i className="fa fa-child fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                                    text: "Children" 
-                                },
-                                { 
-                                    renderIcon: () => <i className="fa fa-users fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                                    text: "Adults" 
-                                },
-                                { 
-                                    renderIcon: () => <i className="fa fa-blind fs-1 mb-3" style={{ color: '#c5a059' }}></i>, 
-                                    text: "Elderly" 
-                                },
-                                { 
-                                    renderIcon: () => <NursingIcon />, 
-                                    text: "Nursing Mothers" 
-                                }
+                                { renderIcon: () => <i className="fa fa-child fs-1 mb-3" style={{ color: '#c5a059' }}></i>, text: "Children" },
+                                { renderIcon: () => <i className="fa fa-users fs-1 mb-3" style={{ color: '#c5a059' }}></i>, text: "Adults" },
+                                { renderIcon: () => <i className="fa fa-blind fs-1 mb-3" style={{ color: '#c5a059' }}></i>, text: "Elderly" },
+                                { renderIcon: () => <NursingIcon />, text: "Nursing Mothers" }
                             ].map((item, index) => (
-                                <motion.div 
-                                    key={index}
-                                    className="col-6 col-md-3"
-                                    whileHover={{ scale: 1.1 }}
-                                >
+                                <motion.div key={index} className="col-6 col-md-3" whileHover={{ scale: 1.1 }}>
                                     <div className="p-3">
                                         {item.renderIcon()}
                                         <h5 style={{ color: '#555', fontSize: '0.9rem', fontWeight: 'bold' }}>{item.text}</h5>
@@ -385,7 +299,7 @@ export default function ProductDetails() {
                 {/* --- FOOTER --- */}
                 <footer className="py-5" style={{ background: '#0f420f', color: '#f4ebd0', borderTop: '5px solid #c5a059' }}>
                     <div className="container">
-                        <div className="row align-items-center">
+                        <div className="row align-items-center text-center text-md-start">
                             <div className="col-md-4 mb-4 mb-md-0">
                                 <h4 className="fw-bold mb-3" style={{ color: '#c5a059', fontFamily: 'Playfair Display, serif' }}>Quality Promise</h4>
                                 <ul className="list-unstyled" style={{ opacity: 0.8 }}>
@@ -401,16 +315,13 @@ export default function ProductDetails() {
                                 <p className="mt-2 fw-bold" style={{ color: '#c5a059' }}>Ph: 94861 70416</p>
                             </div>
                             <div className="col-md-4 text-md-end">
-                                <div className="mb-3">
-                                    <h6 className="fw-bold" style={{ color: '#c5a059' }}>Storage</h6>
-                                    <p className="small mb-0" style={{ opacity: 0.7 }}>Store in a cool, dry place.</p>
-                                    <p className="small" style={{ opacity: 0.7 }}>Best before 6 months.</p>
-                                </div>
+                                <h6 className="fw-bold" style={{ color: '#c5a059' }}>Storage</h6>
+                                <p className="small mb-0" style={{ opacity: 0.7 }}>Store in a cool, dry place.</p>
+                                <p className="small" style={{ opacity: 0.7 }}>Best before 6 months.</p>
                             </div>
                         </div>
                     </div>
                 </footer>
-
             </div>
         </Fragment>
     );

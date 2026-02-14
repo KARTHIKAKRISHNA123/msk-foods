@@ -6,7 +6,8 @@ const cartSlice = createSlice({
     initialState: {
         items: localStorage.getItem("cartItems") ? JSON.parse(localStorage.getItem("cartItems")) : [],
         loading: false,
-        error: null
+        error: null,
+        shippingInfo: localStorage.getItem("shippingInfo") ? JSON.parse(localStorage.getItem("shippingInfo")) : {}
     },
     reducers: {
         addCartItemRequest(state, action) {
@@ -14,12 +15,12 @@ const cartSlice = createSlice({
         },
         addCartItemSuccess(state, action) {
             const item = action.payload;
-            const isItemExist = state.items.find(i => i.product == item.product);
+            const isItemExist = state.items.find(i => i.product === item.product);
             
             if (isItemExist) {
                 // ✅ Sum quantities (Works for both "Add to Cart" and "+/-" buttons)
                 state.items = state.items.map(i => 
-                    i.product == isItemExist.product 
+                    i.product === isItemExist.product 
                     ? { ...i, quantity: i.quantity + item.quantity } 
                     : i
                 );
@@ -44,7 +45,17 @@ const cartSlice = createSlice({
             
             // Update State
             state.items = filterItems;
+        },
+
+        orderCompleted(state, action) {
+            localStorage.removeItem('cartItems');
+            state.items = [];
+        },
+        saveShippingInfo(state, action) {
+            state.shippingInfo = action.payload; // Direct mutation is safe here
+            localStorage.setItem("shippingInfo", JSON.stringify(action.payload));
         }
+    
     }
 });
 
@@ -54,7 +65,9 @@ export const {
     addCartItemRequest,
     addCartItemSuccess,
     addCartItemFail,
-    removeItemFromCart // 👈 Don't forget to export this!
+    removeItemFromCart,
+    orderCompleted,
+    saveShippingInfo
 } = actions;
 
 export default reducer;

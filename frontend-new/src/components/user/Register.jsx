@@ -105,7 +105,7 @@ export default function Register() {
                         className="shadow-lg"
                         style={{ 
                             background: '#ffffff', 
-                            borderRadius: '2px', 
+                            borderRadius: '15px', // Changed to 15px
                             borderTop: '6px solid #c5a059', 
                             boxShadow: '0 30px 60px rgba(15, 66, 15, 0.08)',
                             position: 'relative', 
@@ -122,7 +122,8 @@ export default function Register() {
                                 top: '15px', left: '15px', right: '15px', bottom: '15px',
                                 border: '1px solid rgba(197, 160, 89, 0.2)', 
                                 pointerEvents: 'none',
-                                zIndex: 0
+                                zIndex: 0,
+                                borderRadius: '15px' // Changed to 15px to match parent
                             }}
                         />
 
@@ -260,7 +261,7 @@ export default function Register() {
                                     background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
                                     color: '#0f420f', 
                                     border: 'none', 
-                                    borderRadius: '0', 
+                                    borderRadius: '5px', // Changed to 5px
                                     letterSpacing: '3px', 
                                     textTransform: 'uppercase', 
                                     fontWeight: '700',

@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useDispatch } from 'react-redux';
-// ✨ FIX: Import 'addToCart' from your slice, not the old actions file
 import { addToCart } from '../../slices/cartSlice'; 
 import { toast } from 'react-toastify';
 
@@ -12,7 +11,6 @@ export default function Product({ product }) {
     const hasBackImage = product.images && product.images.length > 1;
 
     const addToCartHandler = () => {
-        // ✨ FIX: Use 'addToCart' thunk with Quantity 1
         dispatch(addToCart(product._id, 1));
         toast.success('Item Added to Cart!', {
             position: 'top-center',
@@ -30,7 +28,6 @@ export default function Product({ product }) {
         >
             <div className="row align-items-center">
                 
-                {/* --- LEFT: Product Image (Cinematic 3D Flip) --- */}
                 <div className="col-md-6 text-center" style={{ perspective: '1500px' }}> 
                     <motion.div 
                         className="image-card-wrapper"
@@ -49,7 +46,6 @@ export default function Product({ product }) {
                             cursor: 'pointer'
                         }}
                     >
-                        {/* --- FRONT SIDE --- */}
                         <motion.div
                             style={{
                                 position: 'absolute',
@@ -78,7 +74,6 @@ export default function Product({ product }) {
                             />
                         </motion.div>
 
-                        {/* --- BACK SIDE --- */}
                         {hasBackImage && (
                             <motion.div
                                 style={{
@@ -112,7 +107,6 @@ export default function Product({ product }) {
                     </motion.div>
                 </div>
 
-                {/* --- RIGHT: Product Details --- */}
                 <div className="col-md-6">
                     <div className="ps-md-5">
                         
@@ -121,7 +115,7 @@ export default function Product({ product }) {
                             whileInView={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.3 }}
                             className="badge mb-3 px-3 py-2" 
-                            style={{backgroundColor: '#f4ebd0', color: '#0a2f0a', letterSpacing: '2px', border: '1px solid #c5a059'}}
+                            style={{backgroundColor: '#f4ebd0', color: '#0a2f0a', letterSpacing: '2px', border: '1px solid #c5a059', borderRadius: '15px'}}
                         >
                             100% NATURAL
                         </motion.div>
@@ -183,7 +177,7 @@ export default function Product({ product }) {
                                     backgroundColor: '#0a2f0a', 
                                     color: '#c5a059',
                                     border: '1px solid #0a2f0a',
-                                    borderRadius: '0',
+                                    borderRadius: '30px', // ✨ Changed
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
                                     fontWeight: '600'
@@ -197,7 +191,7 @@ export default function Product({ product }) {
                                 style={{
                                     border: '1px solid #0a2f0a',
                                     color: '#0a2f0a',
-                                    borderRadius: '0',
+                                    borderRadius: '30px', // ✨ Changed
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
                                     fontWeight: '600',

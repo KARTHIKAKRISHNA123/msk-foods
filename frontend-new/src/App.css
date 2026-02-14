@@ -522,3 +522,35 @@ input:-webkit-autofill:active {
     color: #0f420f !important; /* Dark Green Text */
 }
 
+/* =========================================
+   7. REMOVE BLUE OUTLINES (FOCUS STATES)
+   ========================================= */
+
+/* 1. Global Focus Reset: Change Blue to Gold */
+*:focus-visible {
+    outline: 2px solid var(--royal-gold) !important;
+    outline-offset: 2px;
+}
+
+/* 2. Override Bootstrap Buttons (Remove Blue Shadow) */
+.btn:focus, 
+.btn:active, 
+.btn:active:focus {
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25) !important; /* Soft Gold Glow */
+    outline: none !important;
+    border-color: var(--royal-gold) !important;
+}
+
+/* 3. Specific Fix for Quantity Buttons (+/-) */
+/* This removes the box shadow entirely for a cleaner look on small icons */
+.stockCounter .btn:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    color: var(--royal-gold) !important; /* Highlight icon in gold instead */
+}
+
+/* 4. Fix for Links/Icons */
+a:focus, button:focus {
+    outline: none !important;
+}
+

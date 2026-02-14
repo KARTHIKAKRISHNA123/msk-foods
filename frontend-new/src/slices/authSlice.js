@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+// ✨ IMPORT the reset action from your cart slice
+import { orderCompleted } from './cartSlice'; 
 
 const authSlice = createSlice({
     name: 'auth',
@@ -9,15 +11,12 @@ const authSlice = createSlice({
         user: null,
         error: null,
         isUpdated: false,
-        message: null,  // For forgot password message
-        success: false  // ✨ NEW: For reset password success
+        message: null,
+        success: false 
     },
     reducers: {
         registerRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-            }
+            return { ...state, loading: true }
         },
         registerSuccess(state, action) {
             return {
@@ -38,14 +37,11 @@ const authSlice = createSlice({
             return {
                 ...state,
                 error: null,
-                message: null // Clear message too
+                message: null
             }
         },
         loginRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-            }
+            return { ...state, loading: true }
         },
         loginSuccess(state, action) {
             return {
@@ -81,9 +77,9 @@ const authSlice = createSlice({
             return {
                 ...state,
                 loading: false,
-                isAuthenticated: false, // Ensure they are marked as guest
+                isAuthenticated: false,
                 user: null,
-                error: null // ✅ FIX: Ignore error so "Please login first" doesn't pop up
+                error: null 
             }
         },
         logoutSuccess(state, action) {
@@ -175,7 +171,7 @@ const authSlice = createSlice({
             return {
                 ...state,
                 loading: true,
-                success: false // Reset success flag
+                success: false
             }
         },
         resetPasswordSuccess(state, action) {
@@ -184,7 +180,7 @@ const authSlice = createSlice({
                 loading: false,
                 isAuthenticated: true,
                 user: action.payload.user,
-                success: true // ✨ FIX: Mark reset as successful
+                success: true 
             }
         },
         resetPasswordFail(state, action) {
@@ -246,7 +242,6 @@ export const login = (email, password) => async (dispatch) => {
 export const register = (userData) => async (dispatch) => {
     try {
         dispatch(registerRequest());
-        // For register, we usually send FormData (files), so axios handles headers
         const { data } = await axios.post('/api/v1/register', userData);
         dispatch(registerSuccess(data));
     } catch (error) {
@@ -264,14 +259,27 @@ export const loadUser = () => async (dispatch) => {
     }
 };
 
+// ✨ MODIFIED: Added Cart Clearing Logic
+// ... existing imports
+
+// ✨ MODIFIED for Persistence: Removed cart clearing logic
 export const logout = () => async (dispatch) => {
     try {
         await axios.get('/api/v1/logout');
+        
+        // 1. Only Clear Redux Auth state
         dispatch(logoutSuccess());
+
+        // ❌ REMOVED: localStorage.removeItem('cartItems');
+        // ❌ REMOVED: dispatch(orderCompleted());
+        // This ensures the cart stays in the browser even after logging out.
+
     } catch (error) {
-        dispatch(logoutFail(error.response.data.message || error.message));
+        dispatch(logoutFail(error.response?.data?.message || error.message));
     }
 };
+
+// ... rest of the file
 
 export const update = (userData) => async (dispatch) => {
     try {
@@ -286,7 +294,6 @@ export const update = (userData) => async (dispatch) => {
 export const changePassword = (userData) => async (dispatch) => {
     try {
         dispatch(updatePasswordRequest());
-        // Sending JSON data (not FormData), works with bodyParser/express.json()
         await axios.put('/api/v1/password/change', userData);
         dispatch(updatePasswordSuccess());
     } catch (error) {
