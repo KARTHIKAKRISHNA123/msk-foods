@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
+import axios from "axios"; // ✨ FIXED: Added missing import
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
@@ -31,8 +32,10 @@ import Cart from "./components/cart/Cart";
 import Shipping from "./components/cart/Shipping";
 import ConfirmOrder from "./components/cart/ConfirmOrder";
 import Payment from "./components/cart/Payment";
-import {Elements, loadStripe} from "@stripe/react-stripe-js";
 
+// ✨ Stripe Imports (Correctly separated)
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 
 // =========================================================================
 // 5. AUTHENTICATION COMPONENTS
@@ -56,10 +59,17 @@ function App() {
   useEffect(() => {
     // Keeps user logged in on refresh
     dispatch(loadUser());
+    
     async function getStripeApiKey() {
-      const { data } = await axios.get("/api/v1/stripeapikey");
-      setStripeApiKey(data.stripeApiKey);
+      try {
+        const { data } = await axios.get("/api/v1/stripeapikey");
+        setStripeApiKey(data.stripeApiKey);
+      } catch (error) {
+        console.error("Failed to load Stripe Key", error);
+      }
     }
+
+    getStripeApiKey();
   }, [dispatch]);
 
   return (
@@ -135,17 +145,20 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-               <Route
-                path="/payment"
-                element={
-                  <ProtectedRoute>
-                    <Elements stripe={loadStripe(stripeApiKey)}>
-                    <Payment />
-                    </Elements>
-                  </ProtectedRoute>
-                }
-              />
 
+              {/* ✨ FIXED PAYMENT ROUTE: Waits for API Key before rendering */}
+              {stripeApiKey && (
+                <Route
+                  path="/payment"
+                  element={
+                    <ProtectedRoute>
+                      <Elements stripe={loadStripe(stripeApiKey)}>
+                        <Payment />
+                      </Elements>
+                    </ProtectedRoute>
+                  }
+                />
+              )}
 
             </Routes>
           </div>

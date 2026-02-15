@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import { useStripe, useElements, ... } from '@stripe/react-stripe-js'; // ❌ REMOVED
+import { useStripe, useElements, CardNumberElement, CardExpiryElement, CardCvcElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
@@ -9,14 +9,27 @@ import MetaData from '../layouts/MetaData';
 import CheckoutSteps from './CheckoutSteps';
 
 export default function Payment() {
-    const dispatch = useDispatch();
+    const stripe = useStripe();
+    const elements = useElements();
     const navigate = useNavigate();
+
     const { user } = useSelector(state => state.authState);
-    const { items: cartItems, shippingInfo } = useSelector(state => state.cartState);
+    const { shippingInfo } = useSelector(state => state.cartState);
     
     const [payDisable, setPayDisable] = useState(false);
+    const [focusedField, setFocusedField] = useState(null);
 
     const orderInfo = JSON.parse(sessionStorage.getItem('orderInfo'));
+
+    useEffect(() => {
+        if (!shippingInfo || !shippingInfo.address) {
+            navigate('/shipping');
+            return;
+        }
+        if (!orderInfo) {
+            navigate('/order/confirm');
+        }
+    }, [shippingInfo, orderInfo, navigate]);
 
     const paymentData = {
         amount: Math.round(orderInfo ? orderInfo.totalPrice * 100 : 0),
@@ -31,165 +44,217 @@ export default function Payment() {
             },
             phone: shippingInfo.phoneNo
         }
-    }
-
-    const order = {
-        orderItems: cartItems,
-        shippingInfo
-    }
-
-    if (orderInfo) {
-        order.itemsPrice = orderInfo.itemsPrice;
-        order.shippingPrice = orderInfo.shippingPrice;
-        order.taxPrice = orderInfo.taxPrice;
-        order.totalPrice = orderInfo.totalPrice;
-    }
-
-    useEffect(() => {
-        if (!orderInfo) {
-            toast.error("Order information missing. Please confirm again.", { position: "top-center", theme: "colored" });
-            navigate('/order/confirm');
-        }
-    }, [orderInfo, navigate]);
+    };
 
     const submitHandler = async (e) => {
         e.preventDefault();
         setPayDisable(true);
-        const toastId = toast.loading("Processing Secure Payment...", { position: "top-center", theme: "colored" });
+        const toastId = toast.loading("Processing Secure Royal Payment...", { position: "top-center", theme: "colored" });
 
         try {
-            // --- MOCK PAYMENT LOGIC (Since Stripe is removed) ---
-            
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            const config = { headers: { 'Content-Type': 'application/json' } };
+            const { data } = await axios.post('/api/v1/payment/process', paymentData, config);
+            const client_secret = data.client_secret;
 
-            // Mock success
-            toast.update(toastId, { render: "Payment Successful! Order Placed (Mock).", type: "success", isLoading: false, autoClose: 5000 });
-            
-            // TODO: dispatch(createOrder(order)); 
-            
-            navigate('/order/success');
+            if (!stripe || !elements) return;
 
+            const result = await stripe.confirmCardPayment(client_secret, {
+                payment_method: {
+                    card: elements.getElement(CardNumberElement),
+                    billing_details: { name: user.name, email: user.email }
+                }
+            });
+
+            if (result.error) {
+                toast.update(toastId, { render: result.error.message, type: "error", isLoading: false, autoClose: 5000 });
+                setPayDisable(false);
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    toast.update(toastId, { render: "Payment Successful!", type: "success", isLoading: false, autoClose: 5000 });
+                    sessionStorage.removeItem('orderInfo'); 
+                    navigate('/order/success');
+                } else {
+                    toast.update(toastId, { render: "Payment processing failed.", type: "warning", isLoading: false, autoClose: 5000 });
+                    setPayDisable(false);
+                }
+            }
         } catch (error) {
             toast.update(toastId, { render: error.response?.data?.message || "Payment Error", type: "error", isLoading: false, autoClose: 5000 });
             setPayDisable(false);
         }
-    }
-
-    // Styles for the dummy inputs to match your Royal Theme
-    const inputStyle = {
-        width: '100%',
-        border: 'none',
-        borderBottom: '1px solid rgba(197, 160, 89, 0.3)',
-        borderRadius: 0,
-        background: 'transparent',
-        padding: '10px 0',
-        color: '#0f420f',
-        fontSize: '16px',
-        fontFamily: "'Montserrat', sans-serif",
-        outline: 'none'
     };
+
+    // ✨ STRIPE STYLING - Matches Montserrat Font from Login
+    const stripeOptions = {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#0f420f', // Deep Royal Green
+                fontFamily: "'Montserrat', sans-serif",
+                letterSpacing: '0.05em', 
+                fontWeight: '500',
+                fontSmoothing: 'antialiased',
+                '::placeholder': {
+                    color: 'transparent', // ✨ NO VISIBLE PLACEHOLDERS
+                },
+                iconColor: '#c5a059' 
+            },
+            invalid: { color: '#9e2146', iconColor: '#9e2146' }
+        }
+    };
+
+    // Matches Login.jsx Input Style exactly
+    const getInputWrapperStyle = (fieldName) => ({
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid',
+        borderBottomColor: focusedField === fieldName ? '#c5a059' : 'rgba(197, 160, 89, 0.3)',
+        padding: '10px 0',
+        transition: 'all 0.3s ease',
+        background: 'transparent'
+    });
 
     return (
         <Fragment>
-            <MetaData title={'Secure Payment Gateway'} />
+            <MetaData title={'Secure Royal Gateway'} />
 
-            <div style={{
-                backgroundColor: "#F4E7CE",
-                minHeight: "100vh",
-                backgroundImage: 'url("https://www.transparenttextures.com/patterns/cream-paper.png")',
-                paddingBottom: "80px"
-            }}>
-                
-                <CheckoutSteps shipping confirmOrder payment />
+            <div 
+                className="row wrapper justify-content-center align-items-center" 
+                style={{ 
+                    minHeight: '85vh', 
+                    margin: 0,
+                    // ✨ EXACT Background from Login/Register
+                    background: '#fdfbf7', 
+                    backgroundImage: `
+                        radial-gradient(circle at 50% 10%, rgba(197, 160, 89, 0.1) 0%, transparent 50%),
+                        linear-gradient(180deg, #fdfbf7 0%, #f4ebd0 100%)
+                    `,
+                    paddingBottom: "80px"
+                }}
+            >
+                <div className="w-100">
+                    <CheckoutSteps shipping confirmOrder payment />
+                </div>
 
-                <div className="row wrapper justify-content-center align-items-center m-0" style={{ minHeight: '60vh' }}>
-                    <div className="col-11 col-md-6 col-lg-4">
-                        
+                <div className="col-11 col-md-6 col-lg-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                        className="shadow-lg"
+                        style={{ 
+                            background: '#ffffff', 
+                            borderRadius: '15px', 
+                            borderTop: '6px solid #c5a059', 
+                            boxShadow: '0 30px 60px rgba(15, 66, 15, 0.08)',
+                            position: 'relative', 
+                            overflow: 'hidden'    
+                        }}
+                    >
+                        {/* Ceremonial Inner Frame */}
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="shadow-lg p-5"
-                            style={{ 
-                                background: '#ffffff', 
-                                borderRadius: '15px', 
-                                borderTop: '6px solid #c5a059', 
-                                position: 'relative',
-                                overflow: 'hidden'    
-                            }}
-                        >
-                            {/* Inner Ceremonial Frame */}
-                            <div style={{
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 1.5, ease: "easeOut", delay: 0.4 }}
+                            style={{
                                 position: 'absolute', top: '15px', left: '15px', right: '15px', bottom: '15px',
                                 border: '1px solid rgba(197, 160, 89, 0.2)', pointerEvents: 'none', borderRadius: '15px'
-                            }} />
+                            }} 
+                        />
 
-                            <form onSubmit={submitHandler} style={{ position: 'relative', zIndex: 1 }}>
-                                <div className="text-center mb-5">
-                                    <h2 style={{ fontFamily: 'Playfair Display, serif', color: '#0f420f', fontWeight: '700' }}>
-                                        Card Payment
-                                    </h2>
-                                    <div style={{ width: '40px', height: '2px', background: '#c5a059', margin: '15px auto', opacity: 0.7 }}></div>
-                                    <p className="text-muted small">SECURE SSL ENCRYPTED CONNECTION</p>
-                                </div>
+                        <form onSubmit={submitHandler} className="p-5" style={{ position: 'relative', zIndex: 1 }}>
+                            
+                            {/* HEADER */}
+                            <div className="text-center mb-5">
+                                <motion.h1 
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3 }}
+                                    className="mb-2" 
+                                    style={{ fontFamily: 'Playfair Display, serif', color: '#0f420f', fontWeight: '700', letterSpacing: '0.5px' }}
+                                >
+                                    Secure Payment
+                                </motion.h1>
+                                <div style={{ width: '40px', height: '2px', background: '#c5a059', margin: '0 auto 15px auto', opacity: 0.7 }}></div>
+                                <motion.p 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.5 }}
+                                    className="text-muted" 
+                                    style={{ fontSize: '0.85rem', fontFamily: 'Montserrat, sans-serif' }}
+                                >
+                                    Encrypted Vault Access
+                                </motion.p>
+                            </div>
 
-                                {/* Placeholder Card Number */}
-                                <div className="form-group mb-4">
-                                    <label className="fw-bold mb-2 small text-uppercase" style={{ color: '#c5a059', letterSpacing: '1.5px' }}>Card Number</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder="0000 0000 0000 0000" 
-                                        style={inputStyle}
+                            {/* CARD NUMBER */}
+                            <div className="form-group mb-4">
+                                <label className="fw-bold mb-2 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Card Medallion Number</label>
+                                <div style={getInputWrapperStyle('cardNumber')}>
+                                    <CardNumberElement 
+                                        options={stripeOptions} 
+                                        onFocus={() => setFocusedField('cardNumber')}
+                                        onBlur={() => setFocusedField(null)}
                                     />
                                 </div>
+                            </div>
 
-                                {/* Placeholder Expiry & CVC */}
-                                <div className="row mb-5">
-                                    <div className="col-6">
-                                        <label className="fw-bold mb-2 small text-uppercase" style={{ color: '#c5a059', letterSpacing: '1.5px' }}>Expiry</label>
-                                        <input 
-                                            type="text" 
-                                            placeholder="MM / YY" 
-                                            style={inputStyle}
-                                        />
-                                    </div>
-                                    <div className="col-6">
-                                        <label className="fw-bold mb-2 small text-uppercase" style={{ color: '#c5a059', letterSpacing: '1.5px' }}>CVC</label>
-                                        <input 
-                                            type="text" 
-                                            placeholder="123" 
-                                            style={inputStyle}
+                            {/* EXPIRY & CVC */}
+                            <div className="row mb-5">
+                                <div className="col-6">
+                                    <label className="fw-bold mb-2 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>Expiry</label>
+                                    <div style={getInputWrapperStyle('cardExpiry')}>
+                                        <CardExpiryElement 
+                                            options={stripeOptions} 
+                                            onFocus={() => setFocusedField('cardExpiry')}
+                                            onBlur={() => setFocusedField(null)}
                                         />
                                     </div>
                                 </div>
+                                <div className="col-6">
+                                    <label className="fw-bold mb-2 text-uppercase" style={{ color: '#c5a059', fontSize: '0.7rem', letterSpacing: '1.5px' }}>CVC</label>
+                                    <div style={getInputWrapperStyle('cardCvc')}>
+                                        <CardCvcElement 
+                                            options={stripeOptions} 
+                                            onFocus={() => setFocusedField('cardCvc')}
+                                            onBlur={() => setFocusedField(null)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
-                                <motion.button
-                                    id="pay_btn"
-                                    type="submit"
-                                    whileHover={{ scale: 1.01, boxShadow: "0 10px 20px rgba(197, 160, 89, 0.2)" }}
-                                    whileTap={{ scale: 0.99 }}
-                                    disabled={payDisable}
-                                    className="btn w-100 py-3"
-                                    style={{ 
-                                        background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
-                                        color: '#0f420f', 
-                                        border: 'none', 
-                                        borderRadius: '5px', 
-                                        letterSpacing: '2px', 
-                                        textTransform: 'uppercase', 
-                                        fontWeight: '700',
-                                        fontSize: '0.9rem',
-                                        boxShadow: '0 4px 10px rgba(197, 160, 89, 0.2)'
-                                    }}
-                                >
-                                    Pay {orderInfo && ` ₹${orderInfo.totalPrice}`}
-                                </motion.button>
-                            </form>
-                        </motion.div>
-                    </div>
+                            {/* BUTTON */}
+                            <motion.button
+                                id="pay_btn"
+                                type="submit"
+                                whileHover={{ scale: 1.01, boxShadow: "0 10px 20px rgba(197, 160, 89, 0.2)" }}
+                                whileTap={{ scale: 0.99 }}
+                                disabled={payDisable}
+                                className="btn w-100 py-3"
+                                style={{ 
+                                    background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
+                                    color: '#0f420f', 
+                                    border: 'none', 
+                                    borderRadius: '5px', 
+                                    letterSpacing: '3px', // ✨ Matches Login Button Tracking
+                                    textTransform: 'uppercase', 
+                                    fontWeight: '700',
+                                    fontSize: '0.85rem', // ✨ Matches Login Button Size
+                                    boxShadow: '0 4px 10px rgba(197, 160, 89, 0.2)'
+                                }}
+                            >
+                                Finalize Order · ₹{orderInfo ? orderInfo.totalPrice : '0'}
+                            </motion.button>
+
+                            {/* MICRO-TRUST TEXT */}
+                            <div className="mt-4 text-center">
+                                <span className="text-muted small" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                                    GST Included. Secure Payment via Stripe.
+                                </span>
+                            </div>
+                        </form>
+                    </motion.div>
                 </div>
             </div>
         </Fragment>
-    )
+    );
 }
