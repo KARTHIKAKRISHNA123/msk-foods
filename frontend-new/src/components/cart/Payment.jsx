@@ -248,7 +248,7 @@ export default function Payment() {
                             {/* MICRO-TRUST TEXT */}
                             <div className="mt-4 text-center">
                                 <span className="text-muted small" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
-                                    GST Included. Secure Payment via Stripe.
+                                    GST Included. Secure Payment via Stripe Payment Gateway.
                                 </span>
                             </div>
                         </form>
