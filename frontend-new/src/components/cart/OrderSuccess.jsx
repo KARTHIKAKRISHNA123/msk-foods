@@ -21,7 +21,6 @@ export default function OrderSuccess() {
                     paddingBottom: "80px"
                 }}
             >
-                {/* ✨ Exact container width matching Login.jsx */}
                 <div className="col-11 col-md-6 col-lg-4">
                     
                     <motion.div
@@ -55,7 +54,7 @@ export default function OrderSuccess() {
 
                         <div className="p-5" style={{ position: 'relative', zIndex: 1 }}>
                             
-                            {/* ✨ The Gold Medallion Icon */}
+                            {/* The Gold Medallion Icon with Light Golden Tick */}
                             <motion.div 
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
@@ -82,13 +81,13 @@ export default function OrderSuccess() {
                                         justifyContent: 'center',
                                         boxShadow: '0 10px 20px rgba(197, 160, 89, 0.3)'
                                     }}>
-                                        <i className="fa fa-check" style={{ fontSize: '1.5rem', color: '#0f420f' }}></i>
+                                        <i className="fa fa-check" style={{ fontSize: '1.8rem', color: '#fdfbf7' }}></i>
                                     </div>
                                 </div>
                             </motion.div>
 
                             {/* HEADER */}
-                            <div className="text-center mb-5">
+                            <div className="text-center mb-4">
                                 <motion.h1 
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -99,27 +98,54 @@ export default function OrderSuccess() {
                                     Transaction Honored
                                 </motion.h1>
                                 
-                                <div style={{ width: '40px', height: '2px', background: '#c5a059', margin: '0 auto 15px auto', opacity: 0.7 }}></div>
+                                <div style={{ width: '40px', height: '2px', background: '#c5a059', margin: '0 auto 20px auto', opacity: 0.7 }}></div>
                                 
+                                {/* ✨ MATCHING TEXT STYLE: Playfair, Royal Green, No Gray */}
                                 <motion.p 
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.5 }}
-                                    className="text-muted" 
-                                    style={{ fontSize: '0.85rem', fontFamily: 'Montserrat, sans-serif' }}
+                                    style={{ 
+                                        color: '#0f420f', 
+                                        fontSize: '1rem', 
+                                        fontFamily: 'Playfair Display, serif', 
+                                        lineHeight: '1.7',
+                                        fontStyle: 'italic'
+                                    }}
                                 >
-                                    A formal dispatch has been sent to your inbox.
+                                    Your order has been elegantly processed. The MSK artisans are now preparing your <span style={{ color: '#c5a059', fontWeight: '700', fontStyle: 'normal' }}>premium, nutrition-rich health mix</span> with the utmost care.
                                 </motion.p>
                             </div>
 
-                            {/* TEXT LINK - Exact style of "Forgot Password" / "Member Access" */}
-                            <div className="d-flex justify-content-center mb-5">
-                                <Link to="/orders" style={{ color: '#999', fontSize: '0.8rem', textDecoration: 'none', transition: '0.3s', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: '600' }} onMouseOver={(e) => e.target.style.color = '#c5a059'} onMouseOut={(e) => e.target.style.color = '#999'}>
+                            {/* TEXT LINK - Matching Playfair & Royal Green */}
+                            <div className="d-flex justify-content-center mb-4">
+                                <Link 
+                                    to="/orders" 
+                                    style={{ 
+                                        color: '#0f420f', 
+                                        fontSize: '0.95rem', 
+                                        fontFamily: 'Playfair Display, serif', 
+                                        textDecoration: 'none', 
+                                        transition: '0.3s', 
+                                        letterSpacing: '0.5px', 
+                                        fontWeight: '700',
+                                        borderBottom: '1px solid rgba(197, 160, 89, 0.4)',
+                                        paddingBottom: '2px'
+                                    }} 
+                                    onMouseOver={(e) => {
+                                        e.target.style.color = '#c5a059';
+                                        e.target.style.borderBottom = '1px solid #c5a059';
+                                    }} 
+                                    onMouseOut={(e) => {
+                                        e.target.style.color = '#0f420f';
+                                        e.target.style.borderBottom = '1px solid rgba(197, 160, 89, 0.4)';
+                                    }}
+                                >
                                     View Your Orders
                                 </Link>
                             </div>
 
-                            {/* PRIMARY BUTTON - Exact match to Login.jsx */}
+                            {/* PRIMARY BUTTON - Kept exactly like Login for UI consistency */}
                             <motion.div whileHover={{ scale: 1.01, boxShadow: "0 10px 20px rgba(197, 160, 89, 0.2)" }} whileTap={{ scale: 0.99 }}>
                                 <Link to="/" className="btn w-100 py-3 d-flex align-items-center justify-content-center" style={{ 
                                     background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
@@ -130,6 +156,7 @@ export default function OrderSuccess() {
                                     textTransform: 'uppercase', 
                                     fontWeight: '700',
                                     fontSize: '0.85rem',
+                                    fontFamily: 'Montserrat, sans-serif', // UI Button Font
                                     boxShadow: '0 4px 10px rgba(197, 160, 89, 0.2)',
                                     textDecoration: 'none'
                                 }}>
@@ -137,10 +164,10 @@ export default function OrderSuccess() {
                                 </Link>
                             </motion.div>
 
-                            {/* MICRO-TRUST TEXT - Exact match to Register.jsx */}
-                            <div className="mt-5 text-center">
-                                <span className="text-muted small" style={{ fontSize: '0.8rem' }}>Welcome to the </span>
-                                <span style={{ color: '#c5a059', fontWeight: 'bold', textDecoration: 'none', marginLeft: '3px', fontSize: '0.85rem' }}>
+                            {/* MICRO-TRUST TEXT - Matching Playfair & Royal Green */}
+                            <div className="mt-4 text-center" style={{ fontFamily: 'Playfair Display, serif', color: '#0f420f' }}>
+                                <span style={{ fontSize: '0.9rem', fontStyle: 'italic' }}>Welcome to the </span>
+                                <span style={{ color: '#c5a059', fontWeight: 'bold', textDecoration: 'none', marginLeft: '3px', fontSize: '1rem', fontStyle: 'normal' }}>
                                     Tradition
                                 </span>
                             </div>

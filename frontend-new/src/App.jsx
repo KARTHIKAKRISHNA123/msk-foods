@@ -32,10 +32,12 @@ import Cart from "./components/cart/Cart";
 import Shipping from "./components/cart/Shipping";
 import ConfirmOrder from "./components/cart/ConfirmOrder";
 import Payment from "./components/cart/Payment";
+import OrderSuccess from "./components/cart/OrderSuccess";
+
 
 // ✨ Stripe Imports (Correctly separated)
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 // =========================================================================
 // 5. AUTHENTICATION COMPONENTS
@@ -59,7 +61,7 @@ function App() {
   useEffect(() => {
     // Keeps user logged in on refresh
     dispatch(loadUser());
-    
+
     async function getStripeApiKey() {
       try {
         const { data } = await axios.get("/api/v1/stripeapikey");
@@ -145,6 +147,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/order/success"
+                element={
+                  <ProtectedRoute>
+                    <OrderSuccess />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* ✨ FIXED PAYMENT ROUTE: Waits for API Key before rendering */}
               {stripeApiKey && (
@@ -159,7 +169,6 @@ function App() {
                   }
                 />
               )}
-
             </Routes>
           </div>
 
