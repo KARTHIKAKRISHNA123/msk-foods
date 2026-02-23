@@ -18,11 +18,9 @@ const cartSlice = createSlice({
             const isItemExist = state.items.find(i => i.product === item.product);
             
             if (isItemExist) {
-                // ✅ Sum quantities (Works for both "Add to Cart" and "+/-" buttons)
+                // ✨ FIX: Replace the quantity entirely, do not add them together.
                 state.items = state.items.map(i => 
-                    i.product === isItemExist.product 
-                    ? { ...i, quantity: i.quantity + item.quantity } 
-                    : i
+                    i.product === isItemExist.product ? item : i
                 );
             } else {
                 state.items.push(item);
@@ -35,27 +33,26 @@ const cartSlice = createSlice({
             state.loading = false;
             state.error = action.payload;
         },
-        // ✨ NEW: Action to remove item from cart
         removeItemFromCart(state, action) {
-            // Filter out the item that matches the ID passed in action.payload
             const filterItems = state.items.filter(item => item.product !== action.payload);
-            
-            // Update LocalStorage
             localStorage.setItem('cartItems', JSON.stringify(filterItems));
-            
-            // Update State
             state.items = filterItems;
         },
-
         orderCompleted(state, action) {
+            // ✨ FIX: Do not clear shipping info on order completion, only cart items.
+            // Users usually want to use the same address next time!
             localStorage.removeItem('cartItems');
+            sessionStorage.removeItem('orderInfo');
+            
             state.items = [];
+            state.loading = false;
+            state.error = null;
+            // Kept state.shippingInfo intact
         },
         saveShippingInfo(state, action) {
-            state.shippingInfo = action.payload; // Direct mutation is safe here
+            state.shippingInfo = action.payload; 
             localStorage.setItem("shippingInfo", JSON.stringify(action.payload));
         }
-    
     }
 });
 
@@ -86,7 +83,7 @@ export const addToCart = (id, quantity) => async (dispatch) => {
             price: data.product.price,
             image: data.product.images[0].image, 
             stock: data.product.stock,
-            quantity,
+            quantity, // The specific quantity requested by the user
         };
         
         dispatch(addCartItemSuccess(item));

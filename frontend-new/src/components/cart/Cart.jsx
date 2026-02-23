@@ -13,12 +13,12 @@ export default function Cart() {
 
   const increaseQty = (item) => {
     if (item.quantity >= item.stock) return;
-    dispatch(addToCart(item.product, 1));
+    dispatch(addToCart(item.product, item.quantity + 1));
   };
 
   const decreaseQty = (item) => {
     if (item.quantity <= 1) return;
-    dispatch(addToCart(item.product, -1));
+    dispatch(addToCart(item.product, item.quantity - 1));
   };
 
   const removeItemHandler = (id) => {

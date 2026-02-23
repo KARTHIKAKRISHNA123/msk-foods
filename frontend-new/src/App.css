@@ -554,3 +554,117 @@ a:focus, button:focus {
     outline: none !important;
 }
 
+
+/* =========================================
+   MOBILE CART FIX
+   ========================================= */
+
+/* On small screens, make Order Summary full width and remove sticky */
+@media (max-width: 991px) {
+  /* Order Summary Card */
+  .col-lg-4 .p-4.shadow-lg {
+    position: relative !important;
+    top: 0 !important;
+    margin-top: 1.5rem;
+  }
+}
+
+/* Navbar: Ensure cart is always visible on mobile */
+@media (max-width: 768px) {
+  nav {
+    padding: 0.5rem 1rem !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+  }
+
+  .brand-center-text {
+    font-size: 1.1rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  .nav-actions {
+    gap: 0.8rem !important;
+    flex-shrink: 0;
+  }
+
+  /* Make sure cart link never disappears */
+  #cart {
+    display: flex !important;
+    align-items: center;
+    font-size: 0.9rem !important;
+  }
+
+  /* Hide username text on very small screens, keep avatar */
+  #dropdown-basic span {
+    display: none !important;
+  }
+
+  .navbar-brand img {
+    height: 40px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .brand-center-text {
+    font-size: 0.95rem !important;
+    letter-spacing: 0.5px !important;
+  }
+}
+
+/* =========================================
+   NAVBAR CART VISIBILITY FIX (MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+  nav.navbar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    padding: 0.4rem 1rem !important;
+  }
+
+  /* Hide the col grid behavior — use flex instead */
+  nav .col-12 {
+    flex: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Logo: stay small on left */
+  nav .col-12:first-child {
+    flex: 0 0 auto !important;
+  }
+
+  /* MSK FOODS title: hide on very small to save space */
+  .brand-center-text {
+    display: none !important;
+  }
+
+  /* Right actions: push to far right, always visible */
+  .nav-actions {
+    margin-left: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.8rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Cart link always visible */
+  #cart {
+    display: flex !important;
+    align-items: center !important;
+    font-size: 0.9rem !important;
+  }
+
+  /* Hide username, keep avatar */
+  #dropdown-basic span {
+    display: none !important;
+  }
+
+  /* Push avatar slightly right */
+  .nav-actions .dropdown {
+    margin-right: 8px;
+  }
+}
+
