@@ -33,7 +33,7 @@ import Shipping from "./components/cart/Shipping";
 import ConfirmOrder from "./components/cart/ConfirmOrder";
 import Payment from "./components/cart/Payment";
 import OrderSuccess from "./components/cart/OrderSuccess";
-
+import UserOrders from "./components/order/UserOrders";
 
 // ✨ Stripe Imports (Correctly separated)
 import { Elements } from "@stripe/react-stripe-js";
@@ -152,6 +152,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <OrderSuccess />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <UserOrders />
                   </ProtectedRoute>
                 }
               />
