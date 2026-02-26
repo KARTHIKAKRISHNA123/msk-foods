@@ -282,7 +282,7 @@ export default function Payment() {
 
                             <div className="mt-4 text-center">
                                 <span className="text-muted small" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
-                                    GST Included. Secure Payment via Stripe Payment Gateway.
+                                    GST Included. Secure Payment via Stripe.
                                 </span>
                             </div>
                         </form>

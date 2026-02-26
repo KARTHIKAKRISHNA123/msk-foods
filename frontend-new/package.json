@@ -18,6 +18,7 @@
     "countries-list": "^3.2.2",
     "framer-motion": "^12.29.2",
     "install": "^0.13.0",
+    "mdbreact": "^5.2.0",
     "npm": "^11.10.0",
     "react": "^19.2.0",
     "react-bootstrap": "^2.10.10",

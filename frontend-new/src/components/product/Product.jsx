@@ -1,18 +1,40 @@
 import React from 'react'; 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useDispatch } from 'react-redux';
+// ✨ Added useSelector
+import { useDispatch, useSelector } from 'react-redux'; 
 import { addToCart } from '../../slices/cartSlice'; 
 import { toast } from 'react-toastify';
 
 export default function Product({ product }) {
     const dispatch = useDispatch();
     
+    // ✨ Pull the current cart items from the Redux store
+    const { items: cartItems } = useSelector(state => state.cartState);
+    
     const hasBackImage = product.images && product.images.length > 1;
 
+    // ✨ Upgraded to Smart Add to Cart Logic
     const addToCartHandler = () => {
-        dispatch(addToCart(product._id, 1));
-        toast.success('Item Added to Cart!', {
+        // 1. Check if this product is already in the cart
+        const existingItem = cartItems.find(item => item.product === product._id);
+
+        // 2. Calculate the new quantity (Current Quantity + 1, or just 1)
+        const newQuantity = existingItem ? existingItem.quantity + 1 : 1;
+
+        // 3. Protect against adding more than the available stock
+        if (newQuantity > product.stock) {
+            toast.error("You have reached the maximum available stock for this premium item.", { 
+                position: "top-center", 
+                theme: "colored" 
+            });
+            return;
+        }
+
+        // 4. Dispatch the correct accumulated quantity to the override reducer
+        dispatch(addToCart(product._id, newQuantity));
+        
+        toast.success('Added to your Royal Cart', {
             position: 'top-center',
             theme: "colored"
         });
@@ -172,18 +194,21 @@ export default function Product({ product }) {
                         >
                             <button 
                                 onClick={addToCartHandler}
+                                // ✨ Added a check to disable the button if out of stock
+                                disabled={product.stock === 0} 
                                 className="btn btn-lg px-5 py-3 shadow" 
                                 style={{ 
-                                    backgroundColor: '#0a2f0a', 
-                                    color: '#c5a059',
-                                    border: '1px solid #0a2f0a',
-                                    borderRadius: '30px', // ✨ Changed
+                                    backgroundColor: product.stock === 0 ? '#999' : '#0a2f0a', 
+                                    color: product.stock === 0 ? '#fff' : '#c5a059',
+                                    border: `1px solid ${product.stock === 0 ? '#999' : '#0a2f0a'}`,
+                                    borderRadius: '30px', 
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
-                                    fontWeight: '600'
+                                    fontWeight: '600',
+                                    cursor: product.stock === 0 ? 'not-allowed' : 'pointer'
                                 }}
                             >
-                                Add to Cart
+                                {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                             </button>
 
                             <Link to={`/product/${product._id}`} 
@@ -191,7 +216,7 @@ export default function Product({ product }) {
                                 style={{
                                     border: '1px solid #0a2f0a',
                                     color: '#0a2f0a',
-                                    borderRadius: '30px', // ✨ Changed
+                                    borderRadius: '30px', 
                                     textTransform: 'uppercase',
                                     letterSpacing: '2px',
                                     fontWeight: '600',
