@@ -20,7 +20,8 @@ export default function CheckoutSteps({ shipping, confirmOrder, payment }) {
             ) : (
                 <div className="step text-center">
                     <div className="step-icon shadow" style={{ background: creamBackground, color: darkGold, border: `3px solid ${darkGold}`, transform: 'scale(1.1)' }}>
-                        <i className="fa fa-shipping-fast"></i>
+                        {/* ✨ BUG FIXED: Changed fa-shipping-fast to fa-truck */}
+                        <i className="fa fa-truck"></i>
                     </div>
                     <div className="step-text fw-bold mt-2" style={{ color: darkGold, letterSpacing: '1px' }}>SHIPPING</div>
                 </div>
