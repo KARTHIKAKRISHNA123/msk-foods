@@ -20,7 +20,6 @@ const orderSlice = createSlice({
             return {
                 ...state,
                 loading: false,
-                // ✨ FIX: Changed from action.payload.order to action.payload
                 orderDetails: action.payload 
             }
         },
@@ -47,11 +46,31 @@ const orderSlice = createSlice({
             return {
                 ...state,
                 loading: false,
-                // ✨ FIX: Just use action.payload
-                userOrders: action.payload.orders
+                userOrders: action.payload
             }
         },
         userOrderFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            }
+        },
+        // ✨ FIX: Made this plural (orderDetailsRequest)
+        orderDetailsRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+            }
+        },
+        orderDetailsSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                orderDetails: action.payload
+            }
+        },
+        orderDetailsFail(state, action) {
             return {
                 ...state,
                 loading: false,
@@ -70,7 +89,10 @@ export const {
     clearOrderError,
     userOrderRequest,
     userOrderSuccess,
-    userOrderFail
+    userOrderFail,
+    orderDetailsRequest,
+    orderDetailsSuccess,
+    orderDetailsFail
 } = actions;
 
 export default reducer;
@@ -97,17 +119,30 @@ export const createOrder = (order) => async (dispatch) => {
 };
 
 // --- THUNK 2: Fetch Logged-in User's Orders ---
-// ✨ ADDED: This will fetch the order history for your "My Orders" page
 export const userOrders = () => async (dispatch) => {
     try {
         dispatch(userOrderRequest()); 
         
-        // Note: Check your backend route. Usually it's /api/v1/myorders or /api/v1/orders/me
         const { data } = await axios.get(`/api/v1/myorders`);
         
         dispatch(userOrderSuccess(data.orders));
         
     } catch (error) {
         dispatch(userOrderFail(error.response?.data?.message || error.message));
+    }
+};
+
+// --- THUNK 3: Fetch Single Order Details ---
+export const orderDetails = (id) => async (dispatch) => {
+    try {
+        // ✨ FIX: Made these match the plural exports exactly
+        dispatch(orderDetailsRequest()); 
+        
+        const { data } = await axios.get(`/api/v1/order/${id}`);
+        
+        dispatch(orderDetailsSuccess(data.order));
+        
+    } catch (error) {
+        dispatch(orderDetailsFail(error.response?.data?.message || error.message));
     }
 };

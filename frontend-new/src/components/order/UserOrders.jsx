@@ -31,7 +31,7 @@ export default function UserOrders() {
         show: { opacity: 1, x: 0, transition: { duration: 0.5, ease: "easeOut" } }
     };
 
-    // Reusable Style for the Golden Labels (Matching Login.jsx)
+    // Reusable Style for the Golden Labels
     const labelStyle = {
         color: '#c5a059', 
         fontSize: '0.7rem', 
@@ -59,7 +59,7 @@ export default function UserOrders() {
             >
                 <div className="col-12 col-lg-10">
                     
-                    {/* PAGE HEADER - Matching Login.jsx Header Animation */}
+                    {/* PAGE HEADER */}
                     <div className="text-center mb-5">
                         <motion.h1 
                             initial={{ opacity: 0, y: 10 }}
@@ -100,7 +100,7 @@ export default function UserOrders() {
                             overflow: 'hidden'    
                         }}
                     >
-                        {/* ✨ Ceremonial Inner Frame - Matching Login.jsx Scale Animation */}
+                        {/* Ceremonial Inner Frame */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -146,41 +146,46 @@ export default function UserOrders() {
                                                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(197, 160, 89, 0.08)'}
                                                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                                             >
-                                                <div className="col-12 col-md-3 mb-2 mb-md-0" style={{ fontFamily: 'Montserrat, sans-serif', color: '#0f420f', fontWeight: '600', fontSize: '0.85rem' }}>
-                                                    <span className="d-md-none me-2" style={labelStyle}>ID:</span>
-                                                    #{order._id.substring(0, 10)}...
+                                                {/* ID - Snaps to edges on mobile */}
+                                                <div className="col-12 col-md-3 mb-3 mb-md-0 d-flex justify-content-between justify-content-md-start align-items-center" style={{ fontFamily: 'Montserrat, sans-serif', color: '#0f420f', fontWeight: '600', fontSize: '0.85rem' }}>
+                                                    <span className="d-md-none" style={labelStyle}>ID:</span>
+                                                    <span>#{order._id.substring(0, 10)}...</span>
                                                 </div>
 
-                                                <div className="col-12 col-md-2 mb-2 mb-md-0 text-md-center" style={{ fontFamily: 'Montserrat, sans-serif', color: '#0f420f', fontWeight: '700' }}>
-                                                    <span className="d-md-none me-2" style={labelStyle}>Total:</span>
-                                                    ₹{order.totalPrice}
+                                                {/* AMOUNT - Snaps to edges on mobile */}
+                                                <div className="col-12 col-md-2 mb-3 mb-md-0 d-flex justify-content-between justify-content-md-center align-items-center" style={{ fontFamily: 'Montserrat, sans-serif', color: '#0f420f', fontWeight: '700' }}>
+                                                    <span className="d-md-none" style={labelStyle}>Total:</span>
+                                                    <span>₹{order.totalPrice}</span>
                                                 </div>
 
-                                                <div className="col-12 col-md-4 mb-3 mb-md-0 text-md-center">
-                                                    <span className="d-md-none me-2" style={labelStyle}>Status:</span>
+                                                {/* STATUS - Snaps to edges on mobile */}
+                                                <div className="col-12 col-md-4 mb-4 mb-md-0 d-flex justify-content-between justify-content-md-center align-items-center">
+                                                    <span className="d-md-none" style={labelStyle}>Status:</span>
                                                     <span 
-                                                        className="px-3 py-1"
+                                                        className="px-2 py-1 text-center"
                                                         style={{ 
                                                             fontFamily: 'Montserrat, sans-serif',
-                                                            fontSize: '0.75rem', 
+                                                            fontSize: '0.7rem', 
                                                             fontWeight: '700', 
                                                             letterSpacing: '1px',
                                                             textTransform: 'uppercase',
                                                             borderRadius: '20px',
                                                             backgroundColor: order.orderStatus && order.orderStatus.includes('Delivered') ? 'rgba(15, 66, 15, 0.1)' : 'rgba(197, 160, 89, 0.15)',
-                                                            color: order.orderStatus && order.orderStatus.includes('Delivered') ? '#0f420f' : '#c5a059'
+                                                            color: order.orderStatus && order.orderStatus.includes('Delivered') ? '#0f420f' : '#c5a059',
+                                                            display: 'inline-block',
+                                                            minWidth: '95px' 
                                                         }}
                                                     >
                                                         {order.orderStatus}
                                                     </span>
                                                 </div>
 
-                                                {/* ✨ Animated Action Button */}
-                                                <div className="col-12 col-md-3 text-md-end">
-                                                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} style={{ display: 'inline-block' }}>
+                                                {/* ACTION BUTTON - Block width on mobile */}
+                                                <div className="col-12 col-md-3 text-md-end mt-2 mt-md-0">
+                                                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                                         <Link 
                                                             to={`/order/${order._id}`} 
-                                                            className="btn shadow-sm"
+                                                            className="btn shadow-sm d-block d-md-inline-block"
                                                             style={{ 
                                                                 background: 'transparent', 
                                                                 color: '#0f420f', 
@@ -215,7 +220,7 @@ export default function UserOrders() {
                                     </motion.div>
                                 </Fragment>
                             ) : (
-                                /* EMPTY STATE - Full Animation Match */
+                                /* EMPTY STATE */
                                 <div className="text-center py-5">
                                     <motion.i 
                                         initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.6, type: 'spring' }}
@@ -236,7 +241,6 @@ export default function UserOrders() {
                                         You have not made any royal transactions yet.
                                     </motion.p>
                                     
-                                    {/* ✨ Exact Login.jsx Button Animation */}
                                     <motion.div whileHover={{ scale: 1.01, boxShadow: "0 10px 20px rgba(197, 160, 89, 0.2)" }} whileTap={{ scale: 0.99 }} style={{ display: 'inline-block' }}>
                                         <Link to="/" className="btn shadow-sm" style={{ 
                                             background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
