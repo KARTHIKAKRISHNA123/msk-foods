@@ -55,6 +55,14 @@ import Profile from "./components/user/Profile";
 import UpdateProfile from "./components/user/UpdateProfile";
 import UpdatePassword from "./components/user/UpdatePassword";
 
+
+// =========================================================================
+// 7. ADMIN DASHBOARD COMPONENTS
+// =========================================================================
+
+import Dashboard from "./components/admin/Dashboard";
+import ProductList from './components/admin/ProductList';
+
 function App() {
   const [stripeApiKey, setStripeApiKey] = useState("");
   const dispatch = useDispatch();
@@ -189,6 +197,16 @@ function App() {
               )}
             </Routes>
           </div>
+
+
+              
+
+          <Routes>
+            <Route path="admin/dashboard" element={<ProtectedRoute isAdmin={true}><Dashboard /></ProtectedRoute>} />
+            <Route path="/admin/products" element={<ProtectedRoute isAdmin={true}><ProductList /></ProtectedRoute>} />
+          </Routes>
+
+          
 
           <Footer />
         </div>

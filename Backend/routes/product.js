@@ -3,6 +3,8 @@ import express from "express";
 import { getProducts, newProduct, getSingleProduct, updateProduct, deleteProduct, createReview, getReviews, deleteReview } from "../controllers/productController.js";
 //This file contains all the routes for the products apis
 import { isAuthenticatedUser , authorizeRoles} from "../middlewares/authenticate.js";
+import { getAdminProducts } from "../controllers/productController.js";
+
 
 const router = express.Router();
 
@@ -17,7 +19,8 @@ router.route("/reviews").get(getReviews);
 
 
 //Admin routes
-router.route("admin/product/new").post(isAuthenticatedUser, authorizeRoles('admin'), newProduct);
+router.route("/admin/product/new").post(isAuthenticatedUser, authorizeRoles('admin'), newProduct);
+router.route("/admin/products").get(isAuthenticatedUser, authorizeRoles("admin"), getAdminProducts);
 
 
 export default router;

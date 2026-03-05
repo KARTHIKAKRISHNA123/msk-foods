@@ -54,6 +54,7 @@ export default function Header() {
             <span className="d-none d-md-inline ms-2">{user.name}</span>
           </Dropdown.Toggle>
           <Dropdown.Menu>
+           {user?.role === "admin" && <Dropdown.Item onClick={() => { navigate("/admin/dashboard"); }}>Dashboard</Dropdown.Item> }
             <Dropdown.Item onClick={() => { navigate("/myprofile"); }}>Profile</Dropdown.Item>
             <Dropdown.Item onClick={() => { navigate("/orders"); }}>Orders</Dropdown.Item>
             <Dropdown.Item onClick={logoutHandler}>Logout</Dropdown.Item>

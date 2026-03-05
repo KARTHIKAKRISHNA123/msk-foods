@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../slices/productsSlice';
 import MetaData from './layouts/MetaData';
 import Loader from './layouts/Loader';
-import Product from './product/Product';
+import Product from './home/Product';
 import Hero from './home/Hero';
 import { toast } from 'react-toastify';
 

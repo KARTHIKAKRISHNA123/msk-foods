@@ -70,12 +70,12 @@ const productSchema = new mongoose.Schema({
     },
     reviews: [
         {
-            // user: {
-            //     type: mongoose.Schema.ObjectId,
-            //     ref: "User",
-            //     required: true
-            // },
-            // 
+            user: {
+                type: mongoose.Schema.ObjectId,
+                ref: "User",
+                required: true
+            },
+            
             user: mongoose.Schema.Types.ObjectId,
             rating: {
                 type: Number,
