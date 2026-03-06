@@ -225,7 +225,7 @@ export default function ProductList() {
                                         style={{ fontFamily: fontModern, color: 'rgba(253, 251, 247, 0.5)' }}
                                     >
                                         <i className="fa fa-box-open mb-3" style={{ fontSize: '3.5rem', color: colorGold }}></i>
-                                        <h5 style={{ letterSpacing: '1px' }}>The vault is empty.</h5>
+                                        <h5 style={{ letterSpacing: '1px' }}>Your vault is empty.</h5>
                                     </motion.div>
                                 )}
 
