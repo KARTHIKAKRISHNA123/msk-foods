@@ -22,7 +22,6 @@ const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 app.use(cookieParser());
-
 // ✨ 2. Robust Static File Serving
 // This ensures '/uploads' points to the correct folder no matter where you run the app from
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

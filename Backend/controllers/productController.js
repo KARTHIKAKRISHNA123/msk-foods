@@ -5,6 +5,7 @@ import errorHandler from "../utils/errorHandler.js";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import APIFeatures from "../utils/apiFeatures.js";
 
+
 //Get All Products - /api/v1/products
 export const getProducts = async (req, res, next) => {
 
@@ -25,6 +26,17 @@ export const getProducts = async (req, res, next) => {
 
 //Create Product - /api/v1/product/new
 export const newProduct = catchAsyncErrors(async (req, res, next) => {
+
+  // REPLACE WITH:
+let images = [];
+  if (req.files.length > 0) {
+      req.files.forEach(file => {
+          let url = `${process.env.BACKEND_URL}/uploads/products/${file.filename}`;
+          images.push({ image: url });
+      });
+  }
+
+  req.body.images = images;
 
   req.body.user = req.user.id;
   const product = await Product.create(req.body);
