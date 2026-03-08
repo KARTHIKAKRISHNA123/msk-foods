@@ -7,7 +7,9 @@ const productsSlice = createSlice({
         loading: false,
         products: [],
         productsCount: 0,
-        error: null
+        error: null, 
+        isReviewSubmitted: false,
+        isProductCreated: false // Tracks if a new product was just created
     },
     reducers: {
         productsRequest(state, action) {
@@ -60,13 +62,42 @@ const productsSlice = createSlice({
                 ...state,
                 error: null
             }
+        },
+        // --- NEW PRODUCT REDUCERS ---
+        newProductRequest(state, action) {
+            return {
+                ...state,
+                loading: true,
+            }
+        },
+        newProductSuccess(state, action) {
+            return {
+                ...state,
+                loading: false,
+                product: action.payload.product,
+                isProductCreated: true, // Mark as successfully created
+            }
+        },
+        newProductsFail(state, action) {
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+                isProductCreated: false
+            }
+        },
+        // ✨ FIX 1: Add a reducer to reset the creation status
+        clearProductCreated(state, action) {
+            return {
+                ...state,
+                isProductCreated: false
+            }
         }
     }
 });
 
 const { actions, reducer } = productsSlice;
 
-// ✨ FIX: You must export the admin actions here so the thunk can use them!
 export const { 
     productsRequest, 
     productsSuccess, 
@@ -74,7 +105,11 @@ export const {
     adminProductsRequest, 
     adminProductsSuccess, 
     adminProductsFail,
-    clearError
+    clearError,
+    newProductRequest,
+    newProductSuccess,
+    newProductsFail,
+    clearProductCreated // ✨ Export the new clearer function
 } = actions;
 
 export default reducer;
@@ -91,15 +126,33 @@ export const getProducts = () => async (dispatch) => {
 };
 
 // --- THUNK: Get Products for Admin Dashboard ---
-// ✨ ADDED: The complete API call for your Admin Inventory
 export const getAdminProducts = () => async (dispatch) => {
     try {
         dispatch(adminProductsRequest());
-        // Note: Make sure this route matches your backend admin route!
         const { data } = await axios.get('/api/v1/admin/products'); 
         dispatch(adminProductsSuccess(data));
     } catch (error) {
-        // Keeping that same safe optional chaining (?.)
         dispatch(adminProductsFail(error.response?.data?.message || error.message));
+    }
+};
+
+// --- THUNK: Create a New Product ---
+// ✨ FIX 2: Added the actual API call to send the form data to your backend
+export const createNewProduct = (productData) => async (dispatch) => {
+    try {
+        dispatch(newProductRequest());
+        
+        // When sending files/images, we must set the Content-Type header
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+
+        const { data } = await axios.post('/api/v1/admin/product/new', productData, config);
+        
+        dispatch(newProductSuccess(data));
+    } catch (error) {
+        dispatch(newProductsFail(error.response?.data?.message || error.message));
     }
 };
