@@ -2,7 +2,9 @@ import React, { Fragment, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAdminProducts } from '../../slices/productsSlice';
+import { toast } from 'react-toastify'; // ✨ Imported Toast
+// ✨ Imported the Delete and Error clearing actions
+import { getAdminProducts, deleteProduct, clearProductDeleted, clearError } from '../../slices/productsSlice';
 
 import MetaData from '../layouts/MetaData';
 import Loader from '../layouts/Loader';
@@ -19,12 +21,34 @@ export default function ProductList() {
     const colorGold = '#c5a059';
     const colorCream = '#fdfbf7';
 
-    // Fetch products from Redux state
-    const { products = [], loading = false } = useSelector(state => state.productsState);
+    // ✨ Pulled error and isProductDeleted from Redux state
+    const { products = [], loading = false, error, isProductDeleted } = useSelector(state => state.productsState);
 
     useEffect(() => {
         dispatch(getAdminProducts());
     }, [dispatch]);
+
+    // ✨ NEW: UseEffect to handle Delete Success & Errors
+    useEffect(() => {
+        if (error) {
+            toast.error(error, { theme: 'colored' });
+            dispatch(clearError());
+        }
+        if (isProductDeleted) {
+            toast.success('Product successfully removed from the vault.', { theme: 'colored' });
+            dispatch(clearProductDeleted());
+            dispatch(getAdminProducts()); // Refresh the table instantly!
+        }
+    }, [dispatch, error, isProductDeleted]);
+
+    // ✨ NEW: The actual Delete Handler
+    const deleteHandler = (e, id) => {
+        // Optional: Add a standard browser confirmation before deleting
+        e.target.disabled = true; // Disable the button immediately to prevent multiple clicks
+        if (window.confirm("Are you sure you want to permanently delete this product?")) {
+            dispatch(deleteProduct(id));
+        }
+    };
 
     // --- FRAMER MOTION ANIMATION VARIANTS ---
     const cardVariants = {
@@ -39,7 +63,8 @@ export default function ProductList() {
 
     const rowVariants = {
         hidden: { opacity: 0, x: -30 },
-        show: { opacity: 1, x: 0, transition: { duration: 0.6, type: "spring" } }
+        show: { opacity: 1, x: 0, transition: { duration: 0.6, type: "spring" } },
+        exit: { opacity: 0, scale: 0.8, transition: { duration: 0.3 } } // Smooth exit animation on delete
     };
 
     // Reusable Style for the Golden Mobile Labels & Headers
@@ -80,7 +105,6 @@ export default function ProductList() {
                             Inventory Command
                         </motion.h1>
                         
-                        {/* Animated Gold Line */}
                         <motion.div 
                             initial={{ width: 0 }} 
                             animate={{ width: '80px' }} 
@@ -91,17 +115,16 @@ export default function ProductList() {
                     </div>
 
                     {/* Content */}
-                    {loading ? <Loader /> : (
+                    {loading && products.length === 0 ? <Loader /> : (
                         <motion.div 
                             variants={cardVariants}
                             initial="hidden"
                             animate="show"
                             className="shadow-lg"
                             style={{ 
-                                // ✨ Dominant Royal Green Gradient
                                 background: `linear-gradient(145deg, ${colorGreen} 0%, ${colorDarkGreen} 100%)`, 
                                 borderRadius: '20px', 
-                                border: `1px solid rgba(197, 160, 89, 0.4)`, // Subtle Gold Border
+                                border: `1px solid rgba(197, 160, 89, 0.4)`,
                                 overflow: 'hidden',
                                 position: 'relative',
                                 boxShadow: '0 25px 50px rgba(15, 66, 15, 0.2)'
@@ -126,10 +149,10 @@ export default function ProductList() {
                                     <div className="col-4" style={labelStyle}>Item Name</div>
                                     <div className="col-2 text-center" style={labelStyle}>Unit Price</div>
                                     <div className="col-2 text-center" style={labelStyle}>Stock Level</div>
-                                    <div className="col-2 text-center" style={labelStyle}>Action</div>
+                                    <div className="col-2 text-center" style={labelStyle}>Actions</div>
                                 </div>
 
-                                {/* TABLE BODY - Fully Responsive with Staggered Entrance */}
+                                {/* TABLE BODY */}
                                 {products && products.length > 0 ? (
                                     <motion.div variants={listVariants} initial="hidden" animate="show">
                                         <AnimatePresence>
@@ -137,7 +160,8 @@ export default function ProductList() {
                                                 <motion.div 
                                                     key={product._id} 
                                                     variants={rowVariants}
-                                                    layout // Smoothly adjusts if items are added/removed
+                                                    exit="exit" // Triggered when product is deleted
+                                                    layout 
                                                     whileHover={{ 
                                                         scale: 1.02, 
                                                         backgroundColor: 'rgba(197, 160, 89, 0.08)',
@@ -194,23 +218,48 @@ export default function ProductList() {
                                                         </motion.span>
                                                     </div>
                                                     
-                                                    {/* Action Button */}
-                                                    <div className="col-12 col-md-2 d-flex justify-content-end justify-content-md-center mt-2 mt-md-0">
+                                                    {/* ✨ UPGRADED: Action Buttons (Edit + Delete) */}
+                                                    <div className="col-12 col-md-2 d-flex justify-content-end justify-content-md-center gap-2 mt-2 mt-md-0">
+                                                        
+                                                        {/* Edit Button */}
                                                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-100 w-md-auto">
-                                                            <Link to={`/admin/product/${product._id}`} className="btn w-100 text-center shadow-sm" style={{ 
+                                                            <Link to={`/admin/product/${product._id}`} className="btn w-100 shadow-sm" style={{ 
                                                                 background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
                                                                 color: colorDarkGreen, 
                                                                 border: 'none', 
                                                                 borderRadius: '8px', 
-                                                                padding: '10px 24px',
+                                                                padding: '8px 16px',
                                                                 fontWeight: '800',
-                                                                fontSize: '0.8rem',
-                                                                letterSpacing: '1.5px',
-                                                                textTransform: 'uppercase'
+                                                                fontSize: '0.8rem'
                                                             }}>
-                                                                <i className="fa fa-pencil me-2"></i> Edit
+                                                                <i className="fa fa-pencil"></i>
                                                             </Link>
                                                         </motion.div>
+
+                                                        {/* Delete Button */}
+                                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-100 w-md-auto">
+                                                            <button onClick={(e) => deleteHandler(e, product._id)} className="btn w-100 shadow-sm" style={{ 
+                                                                background: 'rgba(217, 83, 79, 0.15)', 
+                                                                color: '#ff6b6b', 
+                                                                border: '1px solid rgba(217, 83, 79, 0.4)', 
+                                                                borderRadius: '8px', 
+                                                                padding: '8px 16px',
+                                                                fontSize: '0.8rem',
+                                                                transition: 'all 0.3s ease'
+                                                            }}
+                                                            onMouseOver={(e) => {
+                                                                e.currentTarget.style.background = '#d9534f';
+                                                                e.currentTarget.style.color = '#fff';
+                                                            }}
+                                                            onMouseOut={(e) => {
+                                                                e.currentTarget.style.background = 'rgba(217, 83, 79, 0.15)';
+                                                                e.currentTarget.style.color = '#ff6b6b';
+                                                            }}
+                                                            >
+                                                                <i className="fa fa-trash"></i>
+                                                            </button>
+                                                        </motion.div>
+
                                                     </div>
 
                                                 </motion.div>

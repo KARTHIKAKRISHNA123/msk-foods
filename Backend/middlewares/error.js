@@ -1,57 +1,63 @@
 import ErrorHandler from "../utils/errorHandler.js";
 
 const errorHandler = (err, req, res, next) => {
-    err.statusCode = err.statusCode || 500;
-    err.message = err.message || "Internal Server Error";
+    // Create a copy of the error to avoid mutating the original directly in unexpected ways
+    let error = { ...err };
+    error.statusCode = err.statusCode || 500;
+    error.message = err.message || "Internal Server Error";
 
     // --- FIX START: Handle specific errors HERE (Before Env Check) ---
 
     // 1. Wrong Mongoose ID Error
     if (err.name === "CastError") {
         const message = `Resource not found. Invalid: ${err.path}`;
-        err = new ErrorHandler(message, 400);
+        error = new ErrorHandler(message, 400);
     }
 
     // 2. Mongoose Validation Error
-    // FIX: Changed "ValidatorError" to "ValidationError"
     if (err.name === "ValidationError") {
-        const message = Object.values(err.errors).map((value) => value.message);
-        err = new ErrorHandler(message, 400);
+        // ✨ FIX: Added .join(', ') so it sends a clean string instead of a breaking Array
+        const message = Object.values(err.errors).map((value) => value.message).join(', ');
+        error = new ErrorHandler(message, 400);
     }
 
     // 3. Mongoose Duplicate Key Error
     if (err.code === 11000) {
         const message = `Duplicate ${Object.keys(err.keyValue)} entered`;
-        err = new ErrorHandler(message, 400);
+        error = new ErrorHandler(message, 400);
     }
 
     // 4. Wrong JWT Error
     if (err.name === "JsonWebTokenError") {
         const message = "JSON Web Token is invalid, try again";
-        err = new ErrorHandler(message, 400);
+        error = new ErrorHandler(message, 400);
     }
 
     // 5. JWT Expired Error
     if (err.name === "TokenExpiredError") {
         const message = "JSON Web Token is expired, try again";
-        err = new ErrorHandler(message, 400);
+        error = new ErrorHandler(message, 400);
     }
 
     // --- FIX END ---
 
-    if (process.env.NODE_ENV == "development") {
-        res.status(err.statusCode).json({
+    // ✨ FIX: Safely read NODE_ENV (removes accidental spaces)
+    const env = process.env.NODE_ENV ? process.env.NODE_ENV.trim() : "development";
+
+    if (env === "development") {
+        return res.status(error.statusCode).json({
             success: false,
-            message: err.message,
+            message: error.message,
             stack: err.stack,
             error: err,
         });
     }
 
-    if (process.env.NODE_ENV == "production") {
-        res.status(err.statusCode).json({
+    // ✨ FIX: Use 'else' so it ALWAYS sends a response, no matter what!
+    else {
+        return res.status(error.statusCode).json({
             success: false,
-            message: err.message,
+            message: error.message,
         });
     }
 };

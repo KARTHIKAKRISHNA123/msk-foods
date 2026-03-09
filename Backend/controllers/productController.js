@@ -1,5 +1,4 @@
 import Product from "../models/productModel.js";
-// This file contains all the controllers for the products which is the api for products
 import mongoose from "mongoose";
 import errorHandler from "../utils/errorHandler.js";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
@@ -13,12 +12,9 @@ export const getProducts = async (req, res, next) => {
 
   const apiFeatures = new APIFeatures(Product.find(), req.query).search().filter().paginate(resPerPage);
   const products = await apiFeatures.query;
-  // await new Promise(resolve => setTimeout(resolve, 3000));
 
-  // return next(new errorHandler("This is a temp error from getProducts", 500))
   res.status(200).json({
     success: true,
-    //message: "This route will show all products in the database"
     count: products.length,
     products,
   });
@@ -27,9 +23,9 @@ export const getProducts = async (req, res, next) => {
 //Create Product - /api/v1/product/new
 export const newProduct = catchAsyncErrors(async (req, res, next) => {
 
-  // REPLACE WITH:
-let images = [];
-  if (req.files.length > 0) {
+  let images = [];
+  // Safely check if files exist before trying to loop through them
+  if (req.files && req.files.length > 0) {
       req.files.forEach(file => {
           let url = `${process.env.BACKEND_URL}/uploads/products/${file.filename}`;
           images.push({ image: url });
@@ -37,9 +33,10 @@ let images = [];
   }
 
   req.body.images = images;
-
   req.body.user = req.user.id;
+  
   const product = await Product.create(req.body);
+  
   res.status(201).json({
     success: true,
     product,
@@ -65,7 +62,7 @@ export const getSingleProduct = async (req, res, next) => {
 };
 
 //Update Product - api/v1/product/:id
-export const updateProduct = async (req, res, next) => {
+export const updateProduct = catchAsyncErrors(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
   if (!product) {
@@ -75,6 +72,22 @@ export const updateProduct = async (req, res, next) => {
     });
   }
 
+  // Handle Image Updates safely
+  let images = [];
+
+  if (req.body.imagesCleared === "false") {
+    images = product.images; // Keep existing images if not cleared
+  }  
+  if (req.files && req.files.length > 0) {
+      req.files.forEach(file => {
+          let url = `${process.env.BACKEND_URL}/uploads/products/${file.filename}`;
+          images.push({ image: url });
+      });
+      // Only overwrite images if new ones were actually uploaded
+      req.body.images = images;
+  }
+
+  // Finally, update the product!
   product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -84,7 +97,7 @@ export const updateProduct = async (req, res, next) => {
     success: true,
     product,
   });
-};
+});
 
 //Delete Product - api/v1/product/:id
 export const deleteProduct = async (req, res, next) => {
@@ -137,15 +150,11 @@ export const createReview = catchAsyncErrors(async (req, res, next) => {
       if (review.user.toString() == req.user.id.toString()) {
         review.comment = comment;
         review.rating = rating;
-
-
       }
-
     });
 
   }
   else {
-
     //Adding the review
     product.reviews.push(review);
     product.numOfReviews = product.reviews.length;
@@ -162,11 +171,7 @@ export const createReview = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-
   });
-
-
-
 });
 
 
@@ -178,8 +183,8 @@ export const getReviews = catchAsyncErrors(async (req, res, next) => {
     success: true,
     reviews: product.reviews
   });
-
 });
+
 
 //Delete Review - api/v1/review
 export const deleteReview = catchAsyncErrors(async(req, res, next) => {
@@ -196,7 +201,6 @@ export const deleteReview = catchAsyncErrors(async(req, res, next) => {
   //Calculating the ratings after deletion
   let ratings = product.reviews.reduce((acc, review) => {
     return review.rating + acc;
-
 
   }, 0) / reviews.length;
 

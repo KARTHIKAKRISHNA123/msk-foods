@@ -63,6 +63,7 @@ import UpdatePassword from "./components/user/UpdatePassword";
 import Dashboard from "./components/admin/Dashboard";
 import ProductList from './components/admin/ProductList';
 import NewProduct from './components/admin/NewProduct';
+import UpdateProduct from './components/admin/UpdateProduct';
 
 function App() {
   const [stripeApiKey, setStripeApiKey] = useState("");
@@ -93,7 +94,7 @@ function App() {
 
           {/* Main Content Area: Flex Grow pushes Footer to bottom */}
           <div className="flex-grow-1">
-            <ToastContainer theme="colored" position="bottom-right" />
+            <ToastContainer theme="colored" position="top-center" />
 
             <Routes>
               {/* ----------------------------------------------------- */}
@@ -196,17 +197,19 @@ function App() {
                   }
                 />
               )}
+
+              <Route path="/admin/dashboard" element={<ProtectedRoute isAdmin={true}><Dashboard /></ProtectedRoute>} />
+              <Route path="/admin/products" element={<ProtectedRoute isAdmin={true}><ProductList /></ProtectedRoute>} />
+              <Route path="/admin/products/create" element={<ProtectedRoute isAdmin={true}><NewProduct /></ProtectedRoute>} />
+              <Route path="/admin/product/:id" element={<ProtectedRoute isAdmin={true}><UpdateProduct /></ProtectedRoute>} />
+          
             </Routes>
           </div>
 
 
               
 
-          <Routes>
-            <Route path="/admin/dashboard" element={<ProtectedRoute isAdmin={true}><Dashboard /></ProtectedRoute>} />
-            <Route path="/admin/products" element={<ProtectedRoute isAdmin={true}><ProductList /></ProtectedRoute>} />
-            <Route path="/admin/products/create" element={<ProtectedRoute isAdmin={true}><NewProduct /></ProtectedRoute>} />
-          </Routes>
+          
 
           
 
