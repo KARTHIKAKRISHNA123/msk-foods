@@ -12,8 +12,8 @@ router.route('/myOrders').get(isAuthenticatedUser, myOrders);
 
 // Admin routes
 
-router.route("/orders").get(isAuthenticatedUser, authorizeRoles('admin'), getAllOrders);
-router.route("/order/:id").put(isAuthenticatedUser, authorizeRoles('admin'), updateOrder)
+router.route("/admin/orders").get(isAuthenticatedUser, authorizeRoles('admin'), getAllOrders);
+router.route("/admin/order/:id").put(isAuthenticatedUser, authorizeRoles('admin'), updateOrder)
                           .delete(isAuthenticatedUser, authorizeRoles('admin'), deleteOrder);
 
 export default router;
