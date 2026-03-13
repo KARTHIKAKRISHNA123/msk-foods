@@ -145,7 +145,7 @@ export default function OrderList() {
                                     <div className="col-3" style={labelStyle}>Order ID</div>
                                     <div className="col-2" style={labelStyle}>Items</div>
                                     <div className="col-2 text-center" style={labelStyle}>Amount</div>
-                                    <div className="col-3 text-center" style={labelStyle}>Order Status</div>
+                                    <div className="col-3 text-center" style={labelStyle}>Status</div>
                                     <div className="col-2 text-center" style={labelStyle}>Actions</div>
                                 </div>
 
