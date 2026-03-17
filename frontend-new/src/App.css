@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap');
+
 /* =========================================
-   1. GLOBAL LUXURY THEME
+   1. GLOBAL TYPOGRAPHY & COLOR PALETTE
    ========================================= */
 :root {
   /* Pallette: Deep Emerald & Champagne Gold */
@@ -14,6 +16,33 @@
   --font-sans: 'Montserrat', sans-serif;   /* Clean Details */
 }
 
+/* Force Montserrat on all standard text, links, and forms */
+body, p, span, a, div, input, button, textarea, select, .dropdown-item {
+  font-family: var(--font-sans);
+}
+
+/* Force Playfair Display on all headings globally */
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+  font-family: var(--font-serif) !important;
+}
+
+/* Make sure Toastify notifications obey our fonts */
+.Toastify__toast {
+    font-family: var(--font-sans) !important;
+}
+.Toastify__toast--error {
+    font-family: var(--font-serif) !important;
+}
+
+/* Fix input placeholders so they match perfectly */
+::placeholder {
+    font-family: var(--font-sans);
+    letter-spacing: 0.5px;
+}
+
+/* =========================================
+   2. GLOBAL LAYOUT
+   ========================================= */
 html, body {
   height: 100%;
   margin: 0;
@@ -22,7 +51,6 @@ html, body {
 }
 
 body {
-  font-family: var(--font-sans);
   color: #2c2c2c;
   background-color: var(--cream-bg);
   /* Subtle "Grain" texture for premium feel */
@@ -37,12 +65,13 @@ body {
 }
 
 /* =========================================
-   2. ROYAL NAVBAR
+   3. ROYAL NAVBAR
    ========================================= */
 nav {
   background: rgba(10, 47, 10, 0.95) !important; /* Deep Green Glass */
   backdrop-filter: blur(12px);
-  padding: 1rem 3rem;
+  padding: 0.5rem 2rem !important; 
+  min-height: 70px;
   border-bottom: 1px solid rgba(197, 160, 89, 0.3); /* Thin Gold Line */
   display: flex !important;
   justify-content: space-between !important;
@@ -52,7 +81,15 @@ nav {
 
 /* Logo Area */
 .navbar-brand { margin: 0; padding: 0; }
-.navbar-brand img { height: 55px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.navbar-brand img { 
+    height: 55px; 
+    width: auto;
+    object-fit: contain; 
+    transition: transform 0.3s ease;
+}
+.navbar-brand img:hover {
+    transform: scale(1.03); 
+}
 
 /* Hide Search */
 .input-group { display: none !important; }
@@ -68,7 +105,6 @@ nav {
   background: transparent;
   border: 1px solid var(--royal-gold);
   color: var(--royal-gold);
-  font-family: var(--font-sans);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -85,7 +121,6 @@ nav {
 
 #cart {
   color: var(--royal-gold) !important;
-  font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.1rem;
   text-decoration: none;
@@ -97,7 +132,6 @@ nav {
 #cart_count {
   background: var(--royal-gold);
   color: var(--royal-green);
-  font-family: var(--font-sans);
   font-weight: 700;
   font-style: normal;
   border-radius: 50%;
@@ -105,15 +139,32 @@ nav {
   font-size: 0.75rem;
 }
 
+/* STYLE FOR CENTER TEXT (MSK FOODS) */
+.brand-center-text {
+  font-weight: 800;
+  font-size: 1.8rem;
+  background: -webkit-linear-gradient(45deg, #d4af37, #fce38a, #d4af37);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  margin: 0;
+  padding-bottom: 5px;
+  text-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
 /* =========================================
-   3. HERO SECTION (International Style)
+   4. HERO SECTION
    ========================================= */
 .hero-container {
   padding-top: 4rem;
   padding-bottom: 4rem;
 }
 
-/* The "Floating" Product Image */
 .royal-image-wrapper {
   position: relative;
   z-index: 2;
@@ -122,11 +173,10 @@ nav {
 
 .royal-image-wrapper img {
   max-height: 550px;
-  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.25)); /* Realistic shadow */
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.25)); 
   transition: transform 0.5s ease;
 }
 
-/* Background Circle behind product */
 .royal-circle {
   position: absolute;
   top: 50%;
@@ -145,9 +195,7 @@ nav {
   100% { transform: translateY(0px); }
 }
 
-/* Typography */
 .royal-heading {
-  font-family: var(--font-serif);
   font-size: 3.5rem;
   font-weight: 700;
   color: var(--royal-green);
@@ -156,7 +204,6 @@ nav {
 }
 
 .royal-subheading {
-  font-family: var(--font-serif);
   font-style: italic;
   color: var(--royal-gold);
   font-size: 1.5rem;
@@ -171,7 +218,6 @@ nav {
   max-width: 90%;
 }
 
-/* Gold Badges (Stamped Seal Look) */
 .gold-badge {
   display: inline-block;
   border: 1px solid var(--royal-gold);
@@ -185,16 +231,14 @@ nav {
   margin-bottom: 1rem;
 }
 
-/* Premium Button */
 .btn-royal {
   background: var(--royal-green);
   color: white;
-  font-family: var(--font-sans);
   text-transform: uppercase;
   letter-spacing: 2px;
   padding: 1rem 3rem;
   border: none;
-  border-radius: 0; /* Sharp edges */
+  border-radius: 0; 
   position: relative;
   overflow: hidden;
   transition: all 0.3s;
@@ -222,7 +266,7 @@ nav {
 }
 
 /* =========================================
-   4. FOOTER
+   5. FOOTER
    ========================================= */
 footer {
   background: var(--royal-green) !important;
@@ -232,336 +276,160 @@ footer {
   border-top: 4px solid var(--royal-gold);
 }
 
-/* 1. REDUCE NAVBAR HEIGHT */
-nav {
-  padding: 0.3rem 2rem !important; /* Reduced from 1rem to 0.3rem */
-  min-height: 60px; /* Optional: Sets a compact height */
-}
-
-/* 2. STYLE FOR CENTER TEXT (MSK FOODS) */
-.brand-center-text {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 1.8rem;
-  /* Premium Gold Gradient Text */
-  background: -webkit-linear-gradient(45deg, #d4af37, #fce38a, #d4af37);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  position: absolute; /* Forces it to stay exactly in the center */
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  margin: 0;
-  text-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-}
-
-/* Adjust Logo size if needed to fit smaller navbar */
-.navbar-brand img {
-    height: 40px; /* Force logo to fit */
-    width: auto;
-}
-
-/* 1. NAVBAR HEIGHT & PADDING */
-nav {
-  padding: 0.5rem 2rem !important; /* Increased padding slightly for balance */
-  min-height: 70px;
-}
-
-/* 2. CENTER TEXT (Added Bottom Padding) */
-.brand-center-text {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 1.8rem;
-  background: -webkit-linear-gradient(45deg, #d4af37, #fce38a, #d4af37);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  
-  margin: 0;
-  padding-bottom: 5px; /* Added Bottom Padding */
-  text-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-/* 3. LOGO SIZE RESTORED */
-.navbar-brand img {
-    height: auto;  /* Let height auto-scale */
-    width: 150px;  /* Restored to original width */
-    max-height: 60px; /* Constraint to keep it inside navbar */
-}
-
-/* FIXED LOGO STYLING (Clean, Sharp, Proportional) */
-.navbar-brand img {
-    /* Removed filter: drop-shadow for a cleaner, sharper look */
-    
-    /* Fix Stretching: Set height, let width auto-adjust */
-    height: 55px;  /* Sets a fixed height that fits the navbar nicely */
-    width: auto;   /* Width adjusts automatically to maintain aspect ratio */
-    object-fit: contain; /* Ensures the image is never distorted/stretched */
-    
-    transition: transform 0.3s ease; /* Smooth hover transition */
-}
-
-/* Subtle hover effect */
-.navbar-brand img:hover {
-    transform: scale(1.03); /* Slightly enlarges on hover without blur */
-}
-
-/* 1. Make the React root take up the full screen height */
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* 2. Push the footer to the bottom */
-footer {
-  margin-top: auto;
-}
-
-/* --- THE "ROYAL PLAQUE" TOAST THEME --- */
-
-/* 1. Global Settings */
+/* =========================================
+   6. TOAST NOTIFICATIONS
+   ========================================= */
 .Toastify__toast-container {
-    padding: 15px; /* More breathing room */
-    width: 380px !important; /* Slightly wider for elegance */
+    padding: 15px; 
+    width: 380px !important; 
 }
 
-/* 2. The Card: Premium Cardstock Look */
+.Toastify__toast {
+    background: linear-gradient(135deg, #fffbf2 0%, #f7efd2 100%) !important;
+    color: #8a6d3b !important;            
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    border: 1px solid #d4af37 !important; 
+    border-left: 6px solid #d4af37 !important; 
+    border-radius: 2px !important;        
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15) !important;
+}
+
 .Toastify__toast--error {
-    /* Subtle Gradient: Pearl to White */
     background: linear-gradient(135deg, #fff9ea 0%, #ffffff 100%) !important;
-    
-    color: #0a2f0a !important; /* Dark Green Text (High Contrast) */
-    
-    /* The "Royal Accent" - Thick Gold Bar on Left */
+    color: #0a2f0a !important; 
     border-left: 6px solid #c5a059 !important;
-    
-    /* Thin Gold border on other sides */
     border-top: 1px solid #eaddcf !important;
     border-right: 1px solid #eaddcf !important;
     border-bottom: 1px solid #eaddcf !important;
-    
-    border-radius: 0px 4px 4px 0px !important; /* Sharp left, soft right */
-    
-    /* Soft, expensive-looking shadow */
+    border-radius: 0px 4px 4px 0px !important; 
     box-shadow: 0 10px 30px rgba(10, 47, 10, 0.15) !important;
-    
-    font-family: 'Playfair Display', serif !important;
     font-weight: 600 !important;
     min-height: 75px !important;
 }
 
-/* 3. The Icon: Gold (Matches the Left Bar) */
 .Toastify__toast-icon svg {
     fill: #c5a059 !important;
     width: 28px;
     height: 28px;
-    filter: drop-shadow(0 2px 4px rgba(197, 160, 89, 0.3)); /* 3D Icon effect */
+    filter: drop-shadow(0 2px 4px rgba(197, 160, 89, 0.3)); 
 }
 
-/* 4. The Progress Bar: Thin and Elegant */
+.Toastify__toast--error .Toastify__toast-icon > svg {
+    fill: #d4af37 !important; 
+}
+
+.Toastify__progress-bar {
+    background: linear-gradient(to right, #d4af37, #c5a059) !important; 
+    height: 3px !important;
+    opacity: 1 !important;
+}
+
 .Toastify__progress-bar--error {
     background: #c5a059 !important;
-    height: 3px !important;
     opacity: 0.6;
 }
 
-/* 5. The Close Button */
-.Toastify__close-button {
-    color: #0a2f0a !important; /* Green to match text */
-    opacity: 0.4 !important;
-}
-
-.Toastify__close-button:hover {
-    color: #c5a059 !important; /* Gold on hover */
-    opacity: 1 !important;
-}
-
-/* --- GLOBAL THEME OVERRIDES --- */
-
-/* 1. Change the Blue Focus Border to Gold (Global) */
-.form-control:focus {
-    border-color: #c5a059 !important;
-    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25) !important; /* Soft Gold Glow */
-    outline: none !important;
-}
-
-/* 2. Remove the Ugly Blue "Autofill" Background (Chrome/Edge) */
-/* This forces the background to remain white/transparent even when you select an email */
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important; /* Forces background to White */
-    -webkit-text-fill-color: #0f420f !important; /* Forces text to Royal Green */
-    transition: background-color 5000s ease-in-out 0s;
-}
-
-/* 3. Make the Placeholder Text slightly golden-grey */
-::placeholder {
-    color: rgba(15, 66, 15, 0.4) !important;
-    font-size: 0.9rem;
-}
-
-/* --- THE "GOLD STANDARD" TOAST THEME (GLOBAL) --- */
-
-/* --- THE "CHAMPAGNE GOLD" LUXURY THEME (GLOBAL) --- */
-
-/* 1. The Container (Shiny, Light, Aesthetic) */
-.Toastify__toast {
-    /* ✨ Pale Champagne Gradient (The "Shiny" Background) */
-    background: linear-gradient(135deg, #fffbf2 0%, #f7efd2 100%) !important;
-    
-    /* Typography */
-    color: #8a6d3b !important;            /* Dark Antique Gold (Readable & Premium) */
-    font-family: 'Playfair Display', serif !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.5px !important;
-    
-    /* The "Jewelry Box" Border */
-    border: 1px solid #d4af37 !important; /* Bright Gold Border */
-    border-left: 6px solid #d4af37 !important; /* Thicker "Accent" on the left */
-    border-radius: 2px !important;        /* Slightly softened corners */
-    
-    /* Golden Glow Shadow */
-    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.15) !important;
-}
-
-/* 2. The Progress Bar (Timer) */
-.Toastify__progress-bar {
-    background: linear-gradient(to right, #d4af37, #c5a059) !important; /* Gold Gradient Line */
-    height: 3px !important;
-    opacity: 1 !important;
-}
-
-/* 3. The Icons (Checkmark / Info / Error) */
-.Toastify__toast-icon > svg {
-    fill: #d4af37 !important; /* Pure Metallic Gold Icon */
-    filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1)); /* Slight 3D effect on icon */
-}
-
-/* 4. The Close Button (X) */
 .Toastify__close-button {
     color: #8a6d3b !important;
     opacity: 0.5;
 }
+
 .Toastify__close-button:hover {
     color: #d4af37 !important;
     opacity: 1;
 }
 
-/* ✅ ADD THIS INSTEAD (Forces Gold Icon on Errors) */
-.Toastify__toast--error .Toastify__toast-icon > svg {
-    fill: #d4af37 !important; /* Forces the icon back to Metallic Gold */
-}
-
-/* --- Custom Dropdown Styles --- */
-
-/* Change the background color on Hover and Focus */
-.dropdown-item:hover, 
-.dropdown-item:focus {
-    background-color: #c5a059 !important; /* MSK Gold */
-    color: #ffffff !important; /* White text for contrast */
-}
-
-/* Change the background color when Active (Clicked) */
-.dropdown-item.active, 
-.dropdown-item:active {
-    background-color: #c5a059 !important;
-    color: #ffffff !important;
-}
-
-/* --- HEADER DROPDOWN STYLING --- */
-
-/* 1. Username Text ("KK") -> Gold */
-#dropdown-basic {
-    color: #c5a059 !important; /* MSK Gold */
-    font-weight: 700; /* Bold */
-}
-
-/* 2. The "Square" Focus Ring around Avatar -> Gold Glow */
-.btn-default:focus, 
-.dropdown-toggle:focus,
-.btn-default:active:focus {
-    box-shadow: 0 0 0 2px #c5a059 !important; /* Gold Border */
-    border-color: #c5a059 !important;
-}
-
-/* 3. The Dropdown Menu Box -> Dark Green Background with Gold Border */
-.dropdown-menu {
-    background-color: #0f420f !important; /* MSK Dark Green */
-    border: 1px solid #c5a059 !important; /* Gold Border */
-    padding: 0; /* Remove default padding for cleaner look */
-}
-
-/* 4. The Dropdown Items (Profile, Orders, Logout) -> Gold Text */
-.dropdown-item {
-    color: #c5a059 !important; /* Gold Text */
-    padding: 10px 20px; /* More breathing room */
-    border-bottom: 1px solid rgba(197, 160, 89, 0.2); /* Faint gold separator */
-}
-
-/* Remove border from last item */
-.dropdown-item:last-child {
-    border-bottom: none;
-}
-
-/* 5. Hover State -> Gold Background, Dark Green Text */
-.dropdown-item:hover, 
-.dropdown-item:focus {
-    background-color: #c5a059 !important; /* Gold Background */
-    color: #0f420f !important; /* Dark Green Text */
-}
-
 /* =========================================
-   7. REMOVE BLUE OUTLINES (FOCUS STATES)
+   7. GLOBAL FORMS & FOCUS STATES
    ========================================= */
+.form-control:focus {
+    border-color: #c5a059 !important;
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25) !important; 
+    outline: none !important;
+}
 
-/* 1. Global Focus Reset: Change Blue to Gold */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important; 
+    -webkit-text-fill-color: #0f420f !important; 
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 *:focus-visible {
     outline: 2px solid var(--royal-gold) !important;
     outline-offset: 2px;
 }
 
-/* 2. Override Bootstrap Buttons (Remove Blue Shadow) */
 .btn:focus, 
 .btn:active, 
 .btn:active:focus {
-    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25) !important; /* Soft Gold Glow */
+    box-shadow: 0 0 0 0.2rem rgba(197, 160, 89, 0.25) !important; 
     outline: none !important;
     border-color: var(--royal-gold) !important;
 }
 
-/* 3. Specific Fix for Quantity Buttons (+/-) */
-/* This removes the box shadow entirely for a cleaner look on small icons */
 .stockCounter .btn:focus {
     box-shadow: none !important;
     outline: none !important;
-    color: var(--royal-gold) !important; /* Highlight icon in gold instead */
+    color: var(--royal-gold) !important; 
 }
 
-/* 4. Fix for Links/Icons */
 a:focus, button:focus {
     outline: none !important;
 }
 
+/* =========================================
+   8. DROPDOWNS
+   ========================================= */
+.dropdown-item:hover, 
+.dropdown-item:focus,
+.dropdown-item.active, 
+.dropdown-item:active {
+    background-color: #c5a059 !important; 
+    color: #ffffff !important; 
+}
+
+#dropdown-basic {
+    color: #c5a059 !important; 
+    font-weight: 700; 
+}
+
+.btn-default:focus, 
+.dropdown-toggle:focus,
+.btn-default:active:focus {
+    box-shadow: 0 0 0 2px #c5a059 !important; 
+    border-color: #c5a059 !important;
+}
+
+.dropdown-menu {
+    background-color: #0f420f !important; 
+    border: 1px solid #c5a059 !important; 
+    padding: 0; 
+}
+
+.dropdown-item {
+    color: #c5a059 !important; 
+    padding: 10px 20px; 
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2); 
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover, 
+.dropdown-item:focus {
+    background-color: #c5a059 !important; 
+    color: #0f420f !important; 
+}
 
 /* =========================================
-   MOBILE CART FIX
+   9. RESPONSIVE TWEAKS (MOBILE)
    ========================================= */
-
-/* On small screens, make Order Summary full width and remove sticky */
 @media (max-width: 991px) {
-  /* Order Summary Card */
   .col-lg-4 .p-4.shadow-lg {
     position: relative !important;
     top: 0 !important;
@@ -569,32 +437,39 @@ a:focus, button:focus {
   }
 }
 
-/* Navbar: Ensure cart is always visible on mobile */
 @media (max-width: 768px) {
-  nav {
-    padding: 0.5rem 1rem !important;
+  nav.navbar {
+    display: flex !important;
     flex-wrap: nowrap !important;
-    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0.4rem 1rem !important;
+  }
+
+  nav .col-12 {
+    flex: none !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  nav .col-12:first-child {
+    flex: 0 0 auto !important;
   }
 
   .brand-center-text {
-    font-size: 1.1rem !important;
-    letter-spacing: 1px !important;
+    display: none !important;
   }
 
   .nav-actions {
+    margin-left: auto !important;
     gap: 0.8rem !important;
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
   }
 
-  /* Make sure cart link never disappears */
   #cart {
-    display: flex !important;
-    align-items: center;
     font-size: 0.9rem !important;
   }
 
-  /* Hide username text on very small screens, keep avatar */
   #dropdown-basic span {
     display: none !important;
   }
@@ -604,7 +479,6 @@ a:focus, button:focus {
   }
 }
 
-/* Extra small screens */
 @media (max-width: 480px) {
   .brand-center-text {
     font-size: 0.95rem !important;
@@ -613,63 +487,7 @@ a:focus, button:focus {
 }
 
 /* =========================================
-   NAVBAR CART VISIBILITY FIX (MOBILE)
-   ========================================= */
-@media (max-width: 768px) {
-  nav.navbar {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    padding: 0.4rem 1rem !important;
-  }
-
-  /* Hide the col grid behavior — use flex instead */
-  nav .col-12 {
-    flex: none !important;
-    width: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* Logo: stay small on left */
-  nav .col-12:first-child {
-    flex: 0 0 auto !important;
-  }
-
-  /* MSK FOODS title: hide on very small to save space */
-  .brand-center-text {
-    display: none !important;
-  }
-
-  /* Right actions: push to far right, always visible */
-  .nav-actions {
-    margin-left: auto !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.8rem !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* Cart link always visible */
-  #cart {
-    display: flex !important;
-    align-items: center !important;
-    font-size: 0.9rem !important;
-  }
-
-  /* Hide username, keep avatar */
-  #dropdown-basic span {
-    display: none !important;
-  }
-
-  /* Push avatar slightly right */
-  .nav-actions .dropdown {
-    margin-right: 8px;
-  }
-}
-
-/* =========================================
-   ADMIN PANEL: PREMIUM GOLDEN INPUTS
+   10. ADMIN PANEL: PREMIUM GOLDEN INPUTS
    ========================================= */
 .msk-input {
     background: rgba(253, 251, 247, 0.04) !important;
@@ -678,7 +496,6 @@ a:focus, button:focus {
     border-radius: 10px;
     padding: 14px 18px;
     transition: all 0.3s ease;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     letter-spacing: 0.5px;
 }
@@ -694,26 +511,22 @@ a:focus, button:focus {
     color: rgba(253, 251, 247, 0.2) !important;
 }
 
-/* Dropdown options styling */
 .msk-input option {
     background-color: #0a2e0a;
     color: #c5a059;
     font-weight: bold;
 }
 
-/* Hide number input arrows */
 .msk-input::-webkit-outer-spin-button,
 .msk-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* FIX 1: Removes the ugly white resize corner on the Description Box */
 .msk-input::-webkit-resizer {
     background-color: transparent;
 }
 
-/* FIX 2: Prevents Browser Autofill from turning the background white/yellow */
 .msk-input:-webkit-autofill,
 .msk-input:-webkit-autofill:hover, 
 .msk-input:-webkit-autofill:focus, 

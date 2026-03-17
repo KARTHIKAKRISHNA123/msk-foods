@@ -34,7 +34,7 @@ export default function OrderList() {
             dispatch(clearOrderError());
         }
         if (isOrderDeleted) {
-            toast.success('Order successfully removed from the records.', { theme: 'colored' });
+            toast.success('Order successfully removed from the ledger.', { theme: 'colored' });
             dispatch(clearOrderDeleted());
             dispatch(fetchAdminOrders()); // Refresh the table instantly!
         }
@@ -44,6 +44,34 @@ export default function OrderList() {
     const deleteHandler = (id) => {
         if (window.confirm("Are you sure you want to permanently delete this order?")) {
             dispatch(deleteOrder(id));
+        }
+    };
+
+    // ✨ UPGRADED: Strictly Theme-Compliant Status Colors
+    const getStatusColors = (status) => {
+        if (!status) return { bg: 'transparent', text: colorCream, border: 'rgba(253, 251, 247, 0.3)' };
+        
+        if (status.includes('Delivered')) {
+            // THE STAMP OF COMPLETION: Solid MSK Gold
+            return {
+                bg: colorGold, 
+                text: colorDarkGreen, // Dark text on solid gold for high contrast
+                border: colorGold
+            };
+        } else if (status.includes('Shipped')) {
+            // IN TRANSIT: Glowing Gold Outline
+            return {
+                bg: 'rgba(197, 160, 89, 0.1)', 
+                text: colorGold, 
+                border: colorGold
+            };
+        } else {
+            // PROCESSING: Faint Cream/Pearl
+            return {
+                bg: 'rgba(253, 251, 247, 0.08)', 
+                text: colorCream, 
+                border: 'rgba(253, 251, 247, 0.3)'
+            };
         }
     };
 
@@ -79,7 +107,17 @@ export default function OrderList() {
         <Fragment>
             <MetaData title="Order Ledger" />
 
-            <div className="row m-0" style={{ minHeight: '100vh', background: colorCream }}>
+            <div className="row m-0" style={{ 
+                minHeight: '100vh', 
+                backgroundColor: colorCream,
+                // Layered Ambient Background with Texture
+                backgroundImage: `
+                    radial-gradient(circle at 0% 0%, rgba(197, 160, 89, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 100% 100%, rgba(15, 66, 15, 0.12) 0%, transparent 40%),
+                    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E")
+                `,
+                backgroundAttachment: 'fixed'
+            }}>
                 
                 {/* LEFT COLUMN: Sidebar */}
                 <div className="col-12 col-md-2 p-0" style={{ zIndex: 10 }}>
@@ -87,9 +125,7 @@ export default function OrderList() {
                 </div>
 
                 {/* RIGHT COLUMN: Orders Content */}
-                <div className="col-12 col-md-10 py-5 px-4 px-md-5" style={{ 
-                    backgroundImage: `radial-gradient(circle at 80% 10%, rgba(197, 160, 89, 0.05) 0%, transparent 40%)`
-                }}>
+                <div className="col-12 col-md-10 py-5 px-4 px-md-5">
                     
                     {/* Header Area */}
                     <div className="mb-5 text-center text-md-start">
@@ -124,7 +160,7 @@ export default function OrderList() {
                                 border: `1px solid rgba(197, 160, 89, 0.4)`,
                                 overflow: 'hidden',
                                 position: 'relative',
-                                boxShadow: '0 25px 50px rgba(15, 66, 15, 0.2)'
+                                boxShadow: '0 30px 60px rgba(15, 66, 15, 0.25)'
                             }}
                         >
                             {/* Decorative Inner Gold Frame */}
@@ -138,6 +174,12 @@ export default function OrderList() {
                                 }}
                             />
 
+                            {/* Faint Background Watermark Icon */}
+                            <i className="fa fa-book position-absolute" style={{ 
+                                fontSize: '25rem', color: 'rgba(197, 160, 89, 0.02)', 
+                                top: '-50px', right: '-50px', transform: 'rotate(-15deg)', zIndex: 0 
+                            }}></i>
+
                             <div className="p-4 p-md-5" style={{ position: 'relative', zIndex: 1 }}>
                                 
                                 {/* TABLE HEADER - Hidden on Mobile! */}
@@ -145,15 +187,18 @@ export default function OrderList() {
                                     <div className="col-3" style={labelStyle}>Order ID</div>
                                     <div className="col-2" style={labelStyle}>Items</div>
                                     <div className="col-2 text-center" style={labelStyle}>Amount</div>
-                                    <div className="col-3 text-center" style={labelStyle}>Order Status</div>
-                                    <div className="col-2 text-center" style={labelStyle}>Actions</div>
+                                    <div className="col-2 text-center" style={labelStyle}>Status</div>
+                                    <div className="col-3 text-end pe-4" style={labelStyle}>Actions</div>
                                 </div>
 
                                 {/* TABLE BODY */}
                                 {adminOrders && adminOrders.length > 0 ? (
                                     <motion.div variants={listVariants} initial="hidden" animate="show">
                                         <AnimatePresence>
-                                            {adminOrders.map(order => (
+                                            {adminOrders.map(order => {
+                                                const statusStyle = getStatusColors(order.orderStatus);
+
+                                                return (
                                                 <motion.div 
                                                     key={order._id} 
                                                     variants={rowVariants}
@@ -161,8 +206,8 @@ export default function OrderList() {
                                                     layout 
                                                     whileHover={{ 
                                                         scale: 1.01, 
-                                                        backgroundColor: 'rgba(197, 160, 89, 0.08)',
-                                                        boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                                                        backgroundColor: 'rgba(253, 251, 247, 0.03)',
+                                                        boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
                                                         borderRadius: '10px'
                                                     }}
                                                     className="d-flex flex-column flex-md-row align-items-md-center py-4 px-3 mb-2"
@@ -170,7 +215,7 @@ export default function OrderList() {
                                                         borderBottom: `1px solid rgba(197, 160, 89, 0.1)`, 
                                                         fontFamily: fontModern, 
                                                         color: colorCream, 
-                                                        transition: 'background-color 0.3s ease' 
+                                                        transition: 'all 0.3s ease' 
                                                     }}
                                                 >
                                                     
@@ -192,71 +237,77 @@ export default function OrderList() {
                                                         <span>₹{order.totalPrice}</span>
                                                     </div>
                                                     
-                                                    {/* Status Pill */}
-                                                    <div className="col-12 col-md-3 mb-4 mb-md-0 d-flex justify-content-between justify-content-md-center align-items-center">
+                                                    {/* Status Pill (Using Theme Colors) */}
+                                                    <div className="col-12 col-md-2 mb-4 mb-md-0 d-flex justify-content-between justify-content-md-center align-items-center">
                                                         <span className="d-md-none" style={labelStyle}>Status:</span>
                                                         <motion.span 
                                                             whileHover={{ scale: 1.05 }}
                                                             style={{ 
-                                                                background: order.orderStatus && order.orderStatus.includes('Delivered') ? 'rgba(197, 160, 89, 0.15)' : 'rgba(217, 83, 79, 0.2)', 
-                                                                color: order.orderStatus && order.orderStatus.includes('Delivered') ? colorGold : '#ff6b6b', 
-                                                                padding: '6px 16px', 
+                                                                background: statusStyle.bg, 
+                                                                color: statusStyle.text, 
+                                                                border: `1px solid ${statusStyle.border}`,
+                                                                padding: '6px 14px', 
                                                                 borderRadius: '30px',
-                                                                fontSize: '0.75rem',
+                                                                fontSize: '0.7rem',
                                                                 fontWeight: '800',
-                                                                letterSpacing: '1px',
-                                                                textTransform: 'uppercase',
-                                                                border: order.orderStatus && order.orderStatus.includes('Delivered') ? `1px solid rgba(197, 160, 89, 0.3)` : `1px solid rgba(217, 83, 79, 0.4)`
+                                                                letterSpacing: '1.5px',
+                                                                textTransform: 'uppercase'
                                                             }}
                                                         >
                                                             {order.orderStatus}
                                                         </motion.span>
                                                     </div>
                                                     
-                                                    {/* Action Buttons (Edit + Delete) */}
-                                                    <div className="col-12 col-md-2 d-flex justify-content-end justify-content-md-center gap-2 mt-2 mt-md-0">
+                                                    {/* Action Buttons */}
+                                                    <div className="col-12 col-md-3 d-flex justify-content-end align-items-center gap-3 mt-2 mt-md-0 pe-md-2">
                                                         
-                                                        {/* Edit/View Button */}
+                                                        {/* Manage Order Button */}
                                                         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-100 w-md-auto">
-                                                            <Link to={`/admin/order/${order._id}`} className="btn w-100 shadow-sm" style={{ 
-                                                                background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
-                                                                color: colorDarkGreen, 
-                                                                border: 'none', 
-                                                                borderRadius: '8px', 
-                                                                padding: '8px 16px',
-                                                                fontWeight: '800'
-                                                            }}>
-                                                                <i className="fa fa-eye"></i>
+                                                            <Link to={`/admin/order/${order._id}`} className="btn w-100 shadow-sm d-flex justify-content-center align-items-center gap-2" style={{ 
+                                                                background: 'transparent', 
+                                                                color: colorGold, 
+                                                                border: `1px solid ${colorGold}`, 
+                                                                borderRadius: '30px', 
+                                                                padding: '6px 20px',
+                                                                fontWeight: '700',
+                                                                fontSize: '0.75rem',
+                                                                letterSpacing: '1px',
+                                                                textTransform: 'uppercase',
+                                                                transition: 'all 0.3s ease'
+                                                            }}
+                                                            onMouseOver={(e) => {
+                                                                e.currentTarget.style.background = colorGold;
+                                                                e.currentTarget.style.color = colorDarkGreen;
+                                                            }}
+                                                            onMouseOut={(e) => {
+                                                                e.currentTarget.style.background = 'transparent';
+                                                                e.currentTarget.style.color = colorGold;
+                                                            }}
+                                                            >
+                                                                Manage <i className="fa fa-chevron-right" style={{ fontSize: '0.65rem' }}></i>
                                                             </Link>
                                                         </motion.div>
 
                                                         {/* Delete Button */}
-                                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-100 w-md-auto">
-                                                            <button onClick={() => deleteHandler(order._id)} className="btn w-100 shadow-sm" style={{ 
-                                                                background: 'rgba(217, 83, 79, 0.15)', 
-                                                                color: '#ff6b6b', 
-                                                                border: '1px solid rgba(217, 83, 79, 0.4)', 
-                                                                borderRadius: '8px', 
-                                                                padding: '8px 16px',
+                                                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                                            <button onClick={() => deleteHandler(order._id)} className="btn p-2" style={{ 
+                                                                background: 'transparent', 
+                                                                color: 'rgba(217, 83, 79, 0.7)', 
+                                                                border: 'none', 
                                                                 transition: 'all 0.3s ease'
                                                             }}
-                                                            onMouseOver={(e) => {
-                                                                e.currentTarget.style.background = '#d9534f';
-                                                                e.currentTarget.style.color = '#fff';
-                                                            }}
-                                                            onMouseOut={(e) => {
-                                                                e.currentTarget.style.background = 'rgba(217, 83, 79, 0.15)';
-                                                                e.currentTarget.style.color = '#ff6b6b';
-                                                            }}
+                                                            onMouseOver={(e) => e.currentTarget.style.color = '#ff6b6b'}
+                                                            onMouseOut={(e) => e.currentTarget.style.color = 'rgba(217, 83, 79, 0.7)'}
+                                                            title="Delete Order"
                                                             >
-                                                                <i className="fa fa-trash"></i>
+                                                                <i className="fa fa-trash-o" style={{ fontSize: '1.1rem' }}></i>
                                                             </button>
                                                         </motion.div>
 
                                                     </div>
 
                                                 </motion.div>
-                                            ))}
+                                            )})}
                                         </AnimatePresence>
                                     </motion.div>
                                 ) : (
