@@ -94,7 +94,7 @@ export default function Hero({ product }) {
                     className="lead mb-5 mx-auto"
                     style={{ maxWidth: '600px', color: '#666', fontFamily: 'Montserrat, sans-serif' }}
                 >
-                    100% Natural Ingredients. No Preservatives. Pure Healthy.
+                    100% Natural Ingredients. No Preservatives. Pure Health.
                 </motion.p>
 
                 {/* 3. Hero Image */}
