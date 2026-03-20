@@ -47,6 +47,7 @@ export default function Product({ product }) {
             viewport={{ once: true }}    
             transition={{ duration: 0.8 }}
             className="container mt-5 mb-5"
+            style={{ background: 'transparent' }}
         >
             <div className="row align-items-center">
                 

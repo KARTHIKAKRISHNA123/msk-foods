@@ -535,3 +535,31 @@ a:focus, button:focus {
     -webkit-text-fill-color: #fdfbf7 !important;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+/* =========================================
+   GOLD DROPDOWN ARROW FIX
+   ========================================= */
+.form-select.msk-input {
+    /* The custom Gold SVG arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23c5a059' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important; /* ✨ FIX: Stops the crazy tiling! */
+    background-position: right 1rem center !important; /* ✨ FIX: Pushes the arrow to the far right */
+    background-size: 16px 12px !important;
+    padding-right: 2.5rem !important; /* Ensures text doesn't overlap the arrow */
+}
+
+/* App.css */
+.app-viewport {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  /* This ensures the particles don't create scrollbars */
+  overflow-x: hidden; 
+}
+
+/* Ensure all your page content has a relative z-index 
+   so it sits on top of the particles */
+.page-content {
+  position: relative;
+  z-index: 1;
+}

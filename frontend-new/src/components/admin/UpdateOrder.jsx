@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { orderDetails as getOrderDetails, updateOrder, clearOrderUpdated, clearOrderError } from '../../slices/orderSlice';
@@ -12,6 +12,7 @@ import Sidebar from './Sidebar';
 export default function UpdateOrder() {
     const dispatch = useDispatch();
     const { id } = useParams();
+    const dropdownRef = useRef(null);
 
     // --- THEME VARIABLES ---
     const fontRoyal = "'Playfair Display', serif";
@@ -23,6 +24,7 @@ export default function UpdateOrder() {
 
     // --- STATE ---
     const [status, setStatus] = useState("");
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const { loading, orderDetails: order, isOrderUpdated, error } = useSelector(state => state.orderState);
     const { shippingInfo, user, orderItems, totalPrice, paymentInfo, orderStatus } = order || {};
@@ -48,13 +50,24 @@ export default function UpdateOrder() {
         }
     }, [dispatch, error, isOrderUpdated, id, order]);
 
+    // Close dropdown if user clicks outside of it
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     const submitHandler = (e) => {
         e.preventDefault();
         const orderData = { orderStatus: status };
         dispatch(updateOrder(id, orderData));
     };
 
-    // ✨ Theme-Compliant Status Colors (Synced with OrderList)
+    // ✨ Theme-Compliant Status Colors
     const getStatusColors = (currentStatus) => {
         if (!currentStatus) return { bg: 'transparent', text: colorCream, border: 'rgba(253, 251, 247, 0.3)' };
         if (currentStatus.includes('Delivered')) {
@@ -89,17 +102,16 @@ export default function UpdateOrder() {
         marginBottom: '20px'
     };
 
-    // Reusable Green Card Style
+    // ✨ FIX 1: Reusable Green Card Style (overflow is now 'visible' so dropdown doesn't get cut off)
     const greenCardStyle = {
         background: `linear-gradient(145deg, ${colorGreen} 0%, ${colorDarkGreen} 100%)`, 
         borderRadius: '20px', 
         border: `1px solid rgba(197, 160, 89, 0.4)`,
         boxShadow: '0 25px 50px rgba(15, 66, 15, 0.3)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'visible' 
     };
 
-    // Inner Dashed Frame
     const innerFrame = (
         <div style={{
             position: 'absolute', top: '12px', left: '12px', right: '12px', bottom: '12px',
@@ -114,7 +126,6 @@ export default function UpdateOrder() {
             <div className="row m-0" style={{ 
                 minHeight: '100vh', 
                 backgroundColor: colorCream,
-                // ✨ PREMIUM UPGRADE: Ambient Texture applied to whole page
                 backgroundImage: `
                     radial-gradient(circle at 0% 0%, rgba(197, 160, 89, 0.15) 0%, transparent 40%),
                     radial-gradient(circle at 100% 100%, rgba(15, 66, 15, 0.12) 0%, transparent 40%),
@@ -131,12 +142,9 @@ export default function UpdateOrder() {
                 {/* RIGHT COLUMN: Content */}
                 <div className="col-12 col-md-10 py-5 px-4 px-md-5">
                     
-                    {/* Header Area */}
                     <div className="mb-5 text-center text-md-start">
                         <motion.h1 
-                            initial={{ opacity: 0, y: -20 }} 
-                            animate={{ opacity: 1, y: 0 }} 
-                            transition={{ duration: 0.7, ease: "easeOut" }}
+                            initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: "easeOut" }}
                             style={{ fontFamily: fontRoyal, color: colorGreen, fontWeight: '800', fontSize: '2.8rem', margin: 0 }}
                         >
                             Process Order
@@ -145,22 +153,15 @@ export default function UpdateOrder() {
                             Order ID: <span style={{ color: colorGold, fontWeight: '700' }}>#{order?._id}</span>
                         </motion.p>
                         <motion.div 
-                            initial={{ width: 0 }} 
-                            animate={{ width: '80px' }} 
-                            transition={{ duration: 1, delay: 0.4 }}
-                            style={{ height: '4px', background: colorGold, marginTop: '12px' }} 
-                            className="mx-auto mx-md-0 rounded"
+                            initial={{ width: 0 }} animate={{ width: '80px' }} transition={{ duration: 1, delay: 0.4 }}
+                            style={{ height: '4px', background: colorGold, marginTop: '12px' }} className="mx-auto mx-md-0 rounded"
                         />
                     </div>
 
                     {loading ? <Loader /> : (
-                        <motion.div 
-                            variants={formVariants}
-                            initial="hidden"
-                            animate="show"
-                            className="row justify-content-between"
-                        >
-                            {/* --- LEFT SIDE: ORDER MANIFEST (NOW DARK GREEN) --- */}
+                        <motion.div variants={formVariants} initial="hidden" animate="show" className="row justify-content-between">
+                            
+                            {/* --- LEFT SIDE: ORDER MANIFEST --- */}
                             <div className="col-12 col-lg-7 mb-5 mb-lg-0">
                                 <motion.div variants={itemVariants} className="shadow-lg p-4 p-md-5" style={greenCardStyle}>
                                     {innerFrame}
@@ -196,13 +197,14 @@ export default function UpdateOrder() {
                                         <div>
                                             {orderItems && orderItems.map(item => (
                                                 <div key={item.product} className="d-flex align-items-center py-3" style={{ borderBottom: '1px solid rgba(197, 160, 89, 0.15)' }}>
-                                                    <img src={item.image} alt={item.name} width="60" height="60" style={{ borderRadius: '8px', objectFit: 'cover', border: `2px solid ${colorGold}` }} className="shadow-sm me-3" />
+                                                    {/* ✨ FIX 2: Restored image back to 60x60 thumbnail size */}
+                                                    <img src={item.image} alt={item.name} width="300" height="175" style={{ borderRadius: '8px', objectFit: 'cover', border: `2px solid ${colorGold}` }} className="shadow-sm me-3" />
                                                     <div className="flex-grow-1">
                                                         <Link to={`/product/${item.product}`} style={{ textDecoration: 'none', color: colorCream, fontWeight: '700', fontFamily: fontRoyal, fontSize: '1.15rem', letterSpacing: '0.5px' }}>
                                                             {item.name}
                                                         </Link>
                                                         <p className="mb-0 mt-1" style={{ fontFamily: fontModern, fontSize: '0.85rem', color: 'rgba(253, 251, 247, 0.7)' }}>
-                                                            ₹{item.price} <span className="mx-1 text-muted">x</span> {item.quantity} = <strong style={{ color: colorGold, fontSize: '0.95rem' }}>₹{item.price * item.quantity}</strong>
+                                                            ₹{item.price} <span className="mx-1" style={{ color: colorGold }}>x</span> {item.quantity} = <strong style={{ color: colorGold, fontSize: '0.95rem' }}>₹{item.price * item.quantity}</strong>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -225,58 +227,90 @@ export default function UpdateOrder() {
                                                 background: getStatusColors(orderStatus).bg, 
                                                 color: getStatusColors(orderStatus).text, 
                                                 border: `1px solid ${getStatusColors(orderStatus).border}`,
-                                                fontSize: '0.85rem',
-                                                letterSpacing: '1px',
-                                                textTransform: 'uppercase'
+                                                fontSize: '0.85rem', letterSpacing: '1px', textTransform: 'uppercase'
                                             }}>
                                                 Current: {orderStatus}
                                             </span>
                                         </div>
 
-                                        {/* Only show update form if order is NOT delivered */}
                                         {orderStatus !== 'Delivered' ? (
                                             <form onSubmit={submitHandler}>
-                                                <div className="mb-4">
+                                                
+                                                {/* ✨ CUSTOM GOLD DROPDOWN COMPONENT */}
+                                                <div className="mb-4" ref={dropdownRef}>
                                                     <label className="form-label" style={{ fontFamily: fontModern, color: colorGold, fontWeight: '600', fontSize: '0.8rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
                                                         Update Status To:
                                                     </label>
-                                                    {/* Dark Mode Select Input */}
-                                                    <select 
-                                                        className="form-select msk-input" 
-                                                        value={status} 
-                                                        onChange={(e) => setStatus(e.target.value)}
-                                                        style={{ 
-                                                            background: 'rgba(253, 251, 247, 0.05)', 
-                                                            color: colorCream, 
-                                                            border: `1px solid rgba(197, 160, 89, 0.4)`,
-                                                            padding: '14px 18px',
-                                                            borderRadius: '8px',
-                                                            cursor: 'pointer',
-                                                            fontWeight: '600',
-                                                            outline: 'none'
-                                                        }}
-                                                    >
-                                                        {/* Styled options so the dropdown menu looks good */}
-                                                        <option value="Processing" style={{ background: colorDarkGreen, color: colorGold }}>Processing</option>
-                                                        <option value="Shipped" style={{ background: colorDarkGreen, color: colorGold }}>Shipped</option>
-                                                        <option value="Delivered" style={{ background: colorDarkGreen, color: colorGold }}>Delivered</option>
-                                                    </select>
+                                                    
+                                                    <div style={{ position: 'relative' }}>
+                                                        {/* Custom Select Input Box */}
+                                                        <div 
+                                                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                                            className="d-flex justify-content-between align-items-center"
+                                                            style={{ 
+                                                                background: isDropdownOpen ? 'rgba(253, 251, 247, 0.08)' : 'rgba(253, 251, 247, 0.05)', 
+                                                                color: colorCream, 
+                                                                border: isDropdownOpen ? `1px solid ${colorGold}` : `1px solid rgba(197, 160, 89, 0.4)`,
+                                                                boxShadow: isDropdownOpen ? `0 0 15px rgba(197, 160, 89, 0.2)` : 'none',
+                                                                padding: '14px 18px', borderRadius: '8px', cursor: 'pointer',
+                                                                fontWeight: '600', fontFamily: fontModern, transition: 'all 0.3s ease'
+                                                            }}
+                                                        >
+                                                            <span>{status || 'Select Status'}</span>
+                                                            <motion.i 
+                                                                animate={{ rotate: isDropdownOpen ? 180 : 0 }} 
+                                                                transition={{ duration: 0.3 }}
+                                                                className="fa fa-chevron-down" 
+                                                                style={{ color: colorGold, fontSize: '0.8rem' }}
+                                                            />
+                                                        </div>
+
+                                                        {/* Animated Dropdown Menu */}
+                                                        <AnimatePresence>
+                                                            {isDropdownOpen && (
+                                                                <motion.div
+                                                                    initial={{ opacity: 0, y: -10, scaleY: 0.95 }}
+                                                                    animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                                                                    exit={{ opacity: 0, y: -10, scaleY: 0.95 }}
+                                                                    transition={{ duration: 0.2, ease: "easeOut" }}
+                                                                    style={{
+                                                                        position: 'absolute', top: '100%', left: 0, right: 0,
+                                                                        marginTop: '8px', background: colorDarkGreen,
+                                                                        border: `1px solid ${colorGold}`, borderRadius: '8px',
+                                                                        overflow: 'hidden', zIndex: 50,
+                                                                        boxShadow: '0 15px 35px rgba(0,0,0,0.5)',
+                                                                        transformOrigin: 'top center'
+                                                                    }}
+                                                                >
+                                                                    {['Processing', 'Shipped', 'Delivered'].map((optionStatus) => (
+                                                                        <div 
+                                                                            key={optionStatus}
+                                                                            onClick={() => { setStatus(optionStatus); setIsDropdownOpen(false); }}
+                                                                            onMouseEnter={(e) => { e.currentTarget.style.background = colorGold; e.currentTarget.style.color = colorDarkGreen; }}
+                                                                            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = colorGold; }}
+                                                                            style={{
+                                                                                padding: '14px 18px', cursor: 'pointer', color: colorGold, 
+                                                                                fontWeight: '600', fontFamily: fontModern, transition: 'all 0.2s ease',
+                                                                                borderBottom: optionStatus !== 'Delivered' ? `1px solid rgba(197, 160, 89, 0.1)` : 'none'
+                                                                            }}
+                                                                        >
+                                                                            {optionStatus}
+                                                                        </div>
+                                                                    ))}
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </div>
                                                 </div>
                                                 
                                                 <motion.button 
                                                     whileHover={{ scale: 1.02, boxShadow: '0 10px 20px rgba(197, 160, 89, 0.2)' }} 
                                                     whileTap={{ scale: 0.98 }}
-                                                    type="submit" 
-                                                    disabled={loading}
-                                                    className="btn w-100 py-3 shadow"
+                                                    type="submit" disabled={loading} className="btn w-100 py-3 shadow mt-3"
                                                     style={{ 
-                                                        background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', 
-                                                        color: colorDarkGreen, 
-                                                        border: 'none', 
-                                                        borderRadius: '8px', 
-                                                        fontWeight: '800',
-                                                        letterSpacing: '2px',
-                                                        textTransform: 'uppercase',
+                                                        background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)', color: colorDarkGreen, 
+                                                        border: 'none', borderRadius: '8px', fontWeight: '800', letterSpacing: '2px', 
+                                                        textTransform: 'uppercase', fontFamily: fontModern
                                                     }}
                                                 >
                                                     {loading ? <i className="fa fa-spinner fa-spin"></i> : "Update Ledger"}

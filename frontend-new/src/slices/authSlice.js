@@ -1,7 +1,8 @@
+// src/slices/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-// ✨ IMPORT the reset action from your cart slice
-import { orderCompleted } from './cartSlice'; 
+// ✨ IMPORT the cart actions needed for our advanced save/restore logic
+import { orderCompleted, restoreUserCart } from './cartSlice'; 
 
 const authSlice = createSlice({
     name: 'auth',
@@ -27,18 +28,10 @@ const authSlice = createSlice({
             }
         },
         registerFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+            return { ...state, loading: false, error: action.payload }
         },
         clearError(state, action) {
-            return {
-                ...state,
-                error: null,
-                message: null
-            }
+            return { ...state, error: null, message: null }
         },
         loginRequest(state, action) {
             return { ...state, loading: true }
@@ -52,18 +45,10 @@ const authSlice = createSlice({
             }
         },
         loginFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+            return { ...state, loading: false, error: action.payload }
         },
         loadUserRequest(state, action) {
-            return {
-                ...state,
-                isAuthenticated: false,
-                loading: true,
-            }
+            return { ...state, isAuthenticated: false, loading: true }
         },
         loadUserSuccess(state, action) {
             return {
@@ -83,25 +68,13 @@ const authSlice = createSlice({
             }
         },
         logoutSuccess(state, action) {
-            return {
-                ...state,
-                loading: false,
-                isAuthenticated: false,
-                user: null
-            }
+            return { ...state, loading: false, isAuthenticated: false, user: null }
         },
         logoutFail(state, action) {
-            return {
-                ...state,
-                error: action.payload
-            }
+            return { ...state, error: action.payload }
         },
         updateProfileRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-                isUpdated: false
-            }
+            return { ...state, loading: true, isUpdated: false }
         },
         updateProfileSuccess(state, action) {
             return {
@@ -113,66 +86,31 @@ const authSlice = createSlice({
             }
         },
         updateProfileFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+            return { ...state, loading: false, error: action.payload }
         },
         updatePasswordRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-                isUpdated: false
-            }
+            return { ...state, loading: true, isUpdated: false }
         },
         updatePasswordSuccess(state, action) {
-            return {
-                ...state,
-                loading: false,
-                isUpdated: true
-            }
+            return { ...state, loading: false, isUpdated: true }
         },
         updatePasswordFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+            return { ...state, loading: false, error: action.payload }
         },
         clearUpdateProfile(state, action) {
-            return {
-                ...state,
-                isUpdated: false
-            }
+            return { ...state, isUpdated: false }
         },
         forgotPasswordRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-                message: null
-            }
+            return { ...state, loading: true, message: null }
         },
         forgotPasswordSuccess(state, action) {
-            return {
-                ...state,
-                loading: false,
-                message: action.payload
-            }
+            return { ...state, loading: false, message: action.payload }
         },
         forgotPasswordFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload
-            }
+            return { ...state, loading: false, error: action.payload }
         },
         resetPasswordRequest(state, action) {
-            return {
-                ...state,
-                loading: true,
-                success: false
-            }
+            return { ...state, loading: true, success: false }
         },
         resetPasswordSuccess(state, action) {
             return {
@@ -184,12 +122,7 @@ const authSlice = createSlice({
             }
         },
         resetPasswordFail(state, action) {
-            return {
-                ...state,
-                loading: false,
-                error: action.payload,
-                success: false
-            }
+            return { ...state, loading: false, error: action.payload, success: false }
         }
     }
 });
@@ -197,31 +130,14 @@ const authSlice = createSlice({
 const { actions, reducer } = authSlice;
 
 export const { 
-    loginRequest, 
-    loginSuccess, 
-    loginFail,
-    clearError,
-    registerRequest,
-    registerSuccess,
-    registerFail,
-    loadUserRequest,
-    loadUserSuccess,
-    loadUserFail,
-    logoutSuccess,
-    logoutFail,
-    updateProfileRequest,
-    updateProfileSuccess,
-    updateProfileFail,
-    updatePasswordRequest,
-    updatePasswordSuccess,
-    updatePasswordFail,
-    clearUpdateProfile,
-    forgotPasswordRequest,
-    forgotPasswordSuccess,
-    forgotPasswordFail,
-    resetPasswordRequest,
-    resetPasswordSuccess,
-    resetPasswordFail
+    loginRequest, loginSuccess, loginFail, clearError,
+    registerRequest, registerSuccess, registerFail,
+    loadUserRequest, loadUserSuccess, loadUserFail,
+    logoutSuccess, logoutFail,
+    updateProfileRequest, updateProfileSuccess, updateProfileFail, clearUpdateProfile,
+    updatePasswordRequest, updatePasswordSuccess, updatePasswordFail,
+    forgotPasswordRequest, forgotPasswordSuccess, forgotPasswordFail,
+    resetPasswordRequest, resetPasswordSuccess, resetPasswordFail
 } = actions;
 
 export default reducer;
@@ -234,6 +150,10 @@ export const login = (email, password) => async (dispatch) => {
         dispatch(loginRequest());
         const { data } = await axios.post('/api/v1/login', { email, password });
         dispatch(loginSuccess(data));
+        
+        // ✨ RESTORE CART: Tell Redux to load this specific user's cart
+        dispatch(restoreUserCart(data.user._id));
+
     } catch (error) {
         dispatch(loginFail(error.response.data.message || error.message));
     }
@@ -244,6 +164,11 @@ export const register = (userData) => async (dispatch) => {
         dispatch(registerRequest());
         const { data } = await axios.post('/api/v1/register', userData);
         dispatch(registerSuccess(data));
+        
+        // ✨ NEW REGISTRATION: They won't have a saved cart, but we still trigger the restore 
+        // to ensure the active 'cartItems' key is cleared of any ghost data.
+        dispatch(restoreUserCart(data.user._id));
+
     } catch (error) {
         dispatch(registerFail(error.response.data.message || error.message));
     }
@@ -254,32 +179,39 @@ export const loadUser = () => async (dispatch) => {
         dispatch(loadUserRequest());
         const { data } = await axios.get('/api/v1/myprofile');
         dispatch(loadUserSuccess(data));
+        
+        // ✨ RESTORE CART ON REFRESH: Ensures cart survives a page reload
+        dispatch(restoreUserCart(data.user._id));
+
     } catch (error) {
         dispatch(loadUserFail(error.response.data.message));
     }
 };
 
-// ✨ MODIFIED: Added Cart Clearing Logic
-// ... existing imports
-
-// ✨ MODIFIED for Persistence: Removed cart clearing logic
-export const logout = () => async (dispatch) => {
+// ✨ THE MASTER LOGOUT: Save the cart, then destroy the active session
+export const logout = () => async (dispatch, getState) => {
     try {
-        await axios.get('/api/v1/logout');
+        // 1. Grab the user ID and Cart Items *before* we log out
+        const userId = getState().authState.user?._id;
+        const cartItems = getState().cartState.items;
         
-        // 1. Only Clear Redux Auth state
+        // 2. Save a permanent copy of this user's cart to LocalStorage
+        if (userId) {
+            localStorage.setItem(`cartItems_${userId}`, JSON.stringify(cartItems));
+        }
+        
+        // 3. Tell the backend to destroy the session cookie
+        await axios.get('/api/v1/logout');
         dispatch(logoutSuccess());
-
-        // ❌ REMOVED: localStorage.removeItem('cartItems');
-        // ❌ REMOVED: dispatch(orderCompleted());
-        // This ensures the cart stays in the browser even after logging out.
+        
+        // 4. Wipe the active UI cart so the next user doesn't see it
+        localStorage.removeItem('cartItems');
+        dispatch(orderCompleted()); // Re-using this to quickly wipe the Redux array
 
     } catch (error) {
         dispatch(logoutFail(error.response?.data?.message || error.message));
     }
 };
-
-// ... rest of the file
 
 export const update = (userData) => async (dispatch) => {
     try {
@@ -320,3 +252,6 @@ export const resetPassword = (userData, token) => async (dispatch) => {
         dispatch(resetPasswordFail(error.response.data.message || error.message));
     }
 };
+
+
+
