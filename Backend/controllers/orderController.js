@@ -13,9 +13,6 @@ export const newOrder = catchAsyncErrors (async(req, res, next) => {
         shippingPrice,
         totalPrice,
         paymentInfo
-
-        
-
     } = req.body;
 
     const order = await Order.create({
@@ -28,33 +25,28 @@ export const newOrder = catchAsyncErrors (async(req, res, next) => {
         paymentInfo,
         paidAt: Date.now(),
         user: req.user._id
-
-
-    })
+    });
 
     res.status(200).json({
         success: true,
         order
-    })
-
-
-})
+    });
+});
 
 //Get Single Order - api/v1/order/:id
 export const getSingleOrder = catchAsyncErrors(async(req, res, next) => {
     const order = await Order.findById(req.params.id).populate("user", "name email");
+    
     if (!order) {
-        return next(new ErrorHandler("Order not found with this id: ${req.params.id}", 404));
+        // ✨ FIX: Used backticks (``) instead of quotes ("") for template literal
+        return next(new ErrorHandler(`Order not found with this id: ${req.params.id}`, 404));
     }
 
     res.status(200).json({
         success: true,
         order
-    })
-
-
-})
-
+    });
+});
 
 //Get Logged in User Orders - /api/v1/myorders
 export const myOrders = catchAsyncErrors(async(req, res, next) => {
@@ -63,13 +55,10 @@ export const myOrders = catchAsyncErrors(async(req, res, next) => {
     res.status(200).json({
         success: true,
         orders
-    })
-
-
+    });
 });
 
 //Admin Routes: Get All Orders - api/v1/orders
-
 export const getAllOrders = catchAsyncErrors(async(req, res, next) => {
     const orders = await Order.find();
     
@@ -77,32 +66,28 @@ export const getAllOrders = catchAsyncErrors(async(req, res, next) => {
 
     orders.forEach(order => {
         totalAmount += order.totalPrice;
-    })
+    });
 
     res.status(200).json({
         success: true,
         totalAmount,
         orders
-    })
-
-
-})
+    });
+});
 
 //Admin Routes: Update Order / Order Status  - api/v1/order/:id
 export const updateOrder = catchAsyncErrors(async(req, res, next) => {
     const order = await Order.findById(req.params.id);
 
-    if (order.orderStatus == "Delivered") {
+    if (order.orderStatus === "Delivered") {
         return next(new ErrorHandler("You have already Received this order, Because the Order is already delivered", 400));
-
     }
 
-    //Updating the product stock of each order item
-    order.orderItems.forEach(async (orderItem) => {
+    // ✨ FIX: Changed from forEach to for...of loop so 'await' actually works
+    // This ensures stock is updated before the order status changes.
+    for (const orderItem of order.orderItems) {
         await updateStock(orderItem.product, orderItem.quantity);
-
-
-    })
+    }
 
     order.orderStatus = req.body.orderStatus;
     order.deliverdAt = Date.now();
@@ -111,31 +96,29 @@ export const updateOrder = catchAsyncErrors(async(req, res, next) => {
 
     res.status(200).json({
         success: true,
-    })
-
+    });
 });
 
-
+// Helper function to update stock
 async function updateStock(productId, quantity) {
     const product = await Product.findById(productId);
     product.stock -= quantity;
-    product.save({validateBeforeSave: false});
-
+    // ✨ FIX: Added missing 'await' to ensure the product actually saves
+    await product.save({validateBeforeSave: false});
 }
 
-
 //Admin Routes: Delete Order  - api/v1/order/:id
-
 export const deleteOrder = catchAsyncErrors(async(req, res, next) => {
     const order = await Order.findById(req.params.id);
+    
     if (!order) {
-        return next(new ErrorHandler("Order not found with this id: ${req.params.id}", 404));
+        // ✨ FIX: Used backticks (``) instead of quotes ("") for template literal
+        return next(new ErrorHandler(`Order not found with this id: ${req.params.id}`, 404));
     }
 
     await order.deleteOne();
+    
     res.status(200).json({
         success: true,
-
-    })
-})
-
+    });
+});

@@ -9,7 +9,7 @@ export default function ForgotPassword() {
     const [email, setEmail] = useState("");
     const dispatch = useDispatch();
     
-    const { error, message } = useSelector(state => state.authState);
+    const { error, message, loading } = useSelector(state => state.authState);
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -129,7 +129,7 @@ export default function ForgotPassword() {
                                 whileHover={{ scale: 1.01, boxShadow: "0 10px 20px rgba(197, 160, 89, 0.2)" }}
                                 whileTap={{ scale: 0.99 }}
                                 className="btn w-100 py-3"
-                                disabled={loading}
+                               disabled={loading}
                                 style={{
                                     background: 'linear-gradient(135deg, #d4af37 0%, #c5a059 100%)',
                                     color: '#0f420f',
@@ -139,7 +139,9 @@ export default function ForgotPassword() {
                                     letterSpacing: '3px', 
                                     textTransform: 'uppercase',
                                     fontSize: '0.85rem',
-                                    boxShadow: '0 4px 10px rgba(197, 160, 89, 0.2)'
+                                    boxShadow: '0 4px 10px rgba(197, 160, 89, 0.2)',
+                                    opacity: loading ? 0.7 : 1,
+                                    cursor: loading ? 'not-allowed' : 'pointer'
                                 }}
                             >
                                 Send Email

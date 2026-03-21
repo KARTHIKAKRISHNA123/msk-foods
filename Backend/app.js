@@ -32,6 +32,15 @@ app.use("/api/v1/", auth);
 app.use("/api/v1/", order);
 app.use("/api/v1/", payment);
 
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend-new/dist")));
+    app.get("/{*path}", (req, res, next) => {
+        if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/uploads')) {
+            return next();
+        }
+        res.sendFile(path.resolve(__dirname, "../frontend-new/dist/index.html"));
+    });
+}
 // ✨ 4. Error Handler (MUST BE LAST)
 // Only use this once, after all routes are defined.
 app.use(errorHandler);
