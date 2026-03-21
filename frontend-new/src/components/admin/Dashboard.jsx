@@ -5,6 +5,9 @@ import MetaData from "../layouts/MetaData";
 import Sidebar from "./Sidebar"; 
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminProducts } from "../../slices/productsSlice";
+// ✨ FIX: Import actions for Orders and Users
+import { adminOrders as adminOrdersAction } from "../../slices/orderSlice";
+import { getUsers } from "../../slices/userSlice";
 
 export default function Dashboard() {
   // --- THEME VARIABLES ---
@@ -15,14 +18,19 @@ export default function Dashboard() {
 
   // --- REDUX STATE & FETCHING ---
   const { products = [] } = useSelector((state) => state.productsState);
+  // ✨ FIX: Extract adminOrders and users from their respective states
+  const { adminOrders = [] } = useSelector((state) => state.orderState);
+  const { users = [] } = useSelector((state) => state.userState);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAdminProducts());
+    dispatch(adminOrdersAction()); // ✨ Fetch real orders
+    dispatch(getUsers());          // ✨ Fetch real users
   }, [dispatch]);
 
   // --- DYNAMIC TRACKING LOGIC ---
-  // ✨ FIX: This dynamically counts out-of-stock items based on your database!
+  // Count out-of-stock items based on your database
   let outOfStockCount = 0;
   products.forEach((product) => {
     if (product.stock === 0) {
@@ -30,9 +38,14 @@ export default function Dashboard() {
     }
   });
 
-  // --- PLACEHOLDER DATA (Orders & Revenue) ---
-  const totalAmount = 125500; // Example Revenue
-  const ordersCount = 42; // Total orders
+  // ✨ FIX: Calculate real Revenue and Orders count
+  let totalAmount = 0;
+  if (adminOrders && adminOrders.length > 0) {
+      adminOrders.forEach(order => {
+          totalAmount += order.totalPrice;
+      });
+  }
+  const ordersCount = adminOrders ? adminOrders.length : 0;
 
   // --- ANIMATIONS ---
   const fadeUp = {
@@ -145,7 +158,7 @@ export default function Dashboard() {
                         fontWeight: "bold",
                       }}
                     >
-                      ₹{totalAmount.toLocaleString("en-IN")}
+                      ₹{Number(totalAmount).toLocaleString("en-IN", { maximumFractionDigits: 2 })}
                     </h2>
                   </div>
                 </div>
@@ -186,7 +199,6 @@ export default function Dashboard() {
                         fontWeight: "bold",
                       }}
                     >
-                      {/* ✨ FIX: Shows actual total products dynamically */}
                       {products.length}
                     </h3>
                   </div>
@@ -255,7 +267,7 @@ export default function Dashboard() {
                 </div>
               </motion.div>
 
-              {/* Out of Stock Card */}
+              {/* ✨ FIX: Changed "Out of Stock" to "Registered Clientele" (Users) */}
               <motion.div variants={fadeUp} className="col-xl-4 col-sm-6">
                 <div
                   className="p-4 h-100 shadow-sm d-flex flex-column justify-content-between"
@@ -263,7 +275,7 @@ export default function Dashboard() {
                     background: "#fff",
                     borderRadius: "15px",
                     border: `1px solid rgba(197, 160, 89, 0.2)`,
-                    borderTop: `5px solid ${outOfStockCount > 0 ? "#d9534f" : colorGold}`,
+                    borderTop: `5px solid ${colorGold}`,
                   }}
                 >
                   <div>
@@ -277,33 +289,31 @@ export default function Dashboard() {
                         fontSize: "0.85rem",
                       }}
                     >
-                      Out of Stock Alerts
+                      Registered Clientele
                     </p>
                     <h3
                       style={{
                         fontFamily: fontRoyal,
-                        color: outOfStockCount > 0 ? "#d9534f" : colorGreen,
+                        color: colorGreen,
                         fontSize: "2.5rem",
                         fontWeight: "bold",
                       }}
                     >
-                      {outOfStockCount}
+                      {users ? users.length : 0}
                     </h3>
                   </div>
-                  {/* Status Indicator */}
-                  <div
-                    className="mt-4"
+                  <Link
+                    to="/admin/users"
+                    className="text-decoration-none mt-4"
                     style={{
                       fontFamily: fontModern,
-                      color: outOfStockCount > 0 ? "#d9534f" : colorGold,
-                      fontWeight: "600",
-                      fontSize: "0.85rem",
+                      color: colorGold,
+                      fontWeight: "700",
+                      fontSize: "0.9rem",
                     }}
                   >
-                    {outOfStockCount > 0
-                      ? "Action Required"
-                      : "Inventory Healthy"}
-                  </div>
+                    View Members <i className="fa fa-arrow-right ms-1"></i>
+                  </Link>
                 </div>
               </motion.div>
             </div>

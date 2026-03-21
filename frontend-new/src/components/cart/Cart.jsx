@@ -73,7 +73,7 @@ export default function Cart() {
     <Fragment>
       <MetaData title={"Your Royal Cart"} />
 
-      {/* ✨ MASTER BACKGROUND: Same as Login/Register, with fixed attachment to allow GoldDust to float behind */}
+      {/* ✨ MASTER BACKGROUND */}
       <div style={{ 
           minHeight: '100vh', 
           backgroundColor: colorCream,
@@ -87,7 +87,7 @@ export default function Cart() {
       }}>
         {cartItems.length === 0 ? (
           
-          /* --- EMPTY CART STATE (Consistent with Login Card) --- */
+          /* --- EMPTY CART STATE --- */
           <div className="container d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "85vh" }}>
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.8 }} className="col-12 col-md-8 col-lg-6">
                 <div className="shadow-lg p-5 text-center" style={greenCardStyle}>
@@ -123,7 +123,7 @@ export default function Cart() {
         ) : (
           
           /* --- FILLED CART STATE --- */
-          <div className="container py-5">
+          <div className="container-fluid px-4 px-md-5 py-5">
             <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mb-5 text-center">
                 <h2 className="display-4 fw-bold" style={{ color: colorGreen, fontFamily: fontRoyal, margin: 0 }}>Your Selection</h2>
                 <div style={{ width: '60px', height: '3px', background: colorGold, margin: '15px auto' }}></div>
@@ -132,41 +132,47 @@ export default function Cart() {
                 </span>
             </motion.div>
 
-            <div className="row justify-content-between">
+            <div className="row justify-content-center g-4">
               
               {/* --- LEFT: CART ITEMS LIST --- */}
-              <motion.div className="col-12 col-lg-7 mb-5 mb-lg-0" variants={containerVariants} initial="hidden" animate="show">
+              <motion.div className="col-12 col-xl-8 col-lg-8 mb-5 mb-lg-0" variants={containerVariants} initial="hidden" animate="show">
                 <AnimatePresence>
                   {cartItems.map((item) => (
                     
-                    /* ✨ CHANGED: Apply greenCardStyle to each cart item card */
-                    <motion.div key={item.product} variants={itemVariants} exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }} layout className="shadow-sm mb-4" style={greenCardStyle}>
+                    <motion.div key={item.product} variants={itemVariants} exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }} layout className="shadow-sm mb-4" style={{...greenCardStyle, width: '100%'}}>
                       
-                      {/* ✨ ADDED: Inner frame inside each item card */}
                       {innerFrame}
 
+                      {/* ✨ ADJUSTED: The row layout now gives the image 4 columns instead of 2 so it fits perfectly without squashing */}
                       <div className="row g-0 align-items-center p-3 p-md-4" style={{ position: 'relative', zIndex: 1 }}>
                         
-                        {/* Image */}
-                        <div className="col-4 col-md-2 text-center">
-                          <img src={item.image} alt={item.name} className="img-fluid rounded shadow-sm" style={{ objectFit: "cover", width: '120px', height: '80px', border: `2px solid ${colorGold}` }} />
+                        {/* Image - Now given more space (col-md-4 instead of col-md-2) */}
+                        <div className="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
+                          <img 
+                            src={item.image} 
+                            alt={item.name} 
+                            className="img-fluid rounded shadow-sm" 
+                            style={{ 
+                                objectFit: "cover", 
+                                width: '300px',  /* ✨ EXACT DIMENSIONS REQUESTED */
+                                height: '175px', /* ✨ EXACT DIMENSIONS REQUESTED */
+                                border: `2px solid ${colorGold}` 
+                            }} 
+                          />
                         </div>
 
-                        {/* Details */}
-                        <div className="col-8 col-md-4 ps-4">
-                          {/* ✨ CHANGED: Text color from Green to Gold for readability */}
-                          <Link to={`/product/${item.product}`} className="text-decoration-none d-block mb-1" style={{ color: colorGold, fontFamily: fontRoyal, fontWeight: "800", fontSize: '1.2rem' }}>
+                        {/* Details - Shifted to col-md-3 to accommodate larger image */}
+                        <div className="col-12 col-md-3 text-center text-md-start ps-md-4 mb-3 mb-md-0">
+                          <Link to={`/product/${item.product}`} className="text-decoration-none d-block mb-1" style={{ color: colorGold, fontFamily: fontRoyal, fontWeight: "800", fontSize: '1.4rem' }}>
                             {item.name}
                           </Link>
-                          {/* ✨ CHANGED: Text color from dark to cream with opacity for readability */}
-                          <small className="text-uppercase" style={{ fontSize: "0.7rem", letterSpacing: "1.5px", color: 'rgba(253, 251, 247, 0.6)', fontWeight: '600', fontFamily: fontModern }}>Premium Pack</small>
-                          <p className="mt-2 mb-0 fw-bold" style={{ color: colorGold, fontSize: "1.2rem", fontFamily: fontModern }}>₹{item.price}</p>
+                          <small className="text-uppercase d-block mb-2" style={{ fontSize: "0.75rem", letterSpacing: "1.5px", color: 'rgba(253, 251, 247, 0.6)', fontWeight: '600', fontFamily: fontModern }}>Premium Pack</small>
+                          <p className="mb-0 fw-bold" style={{ color: colorGold, fontSize: "1.3rem", fontFamily: fontModern }}>₹{item.price}</p>
                         </div>
 
-                        {/* Quantity Controls */}
-                        <div className="col-6 col-md-4 mt-4 mt-md-0 d-flex justify-content-md-center ps-4 ps-md-0">
-                          {/* ✨ CHANGED: Inverse styling (dark box with light border) to fit the dark green card background */}
-                          <div className="d-flex align-items-center shadow-sm" style={{ border: `1px solid ${colorGold}`, borderRadius: "8px", background: 'rgba(253, 251, 247, 0.1)', overflow: 'hidden' }}>
+                        {/* Quantity Controls - Shifted to col-md-3 */}
+                        <div className="col-8 col-md-3 d-flex justify-content-center">
+                          <div className="d-flex align-items-center shadow-sm" style={{ border: `1px solid rgba(197, 160, 89, 0.4)`, borderRadius: "8px", background: 'rgba(253, 251, 247, 0.05)', overflow: 'hidden' }}>
                             <motion.button whileTap={{ scale: 0.9, backgroundColor: 'rgba(197, 160, 89, 0.2)' }} className="btn px-3 py-2" onClick={() => decreaseQty(item)} style={{ color: colorGold, border: "none", borderRadius: 0, borderRight: `1px solid rgba(197, 160, 89, 0.2)` }}>
                               <i className="fa fa-minus" style={{ fontSize: '0.8rem' }}></i>
                             </motion.button>
@@ -179,9 +185,8 @@ export default function Cart() {
                           </div>
                         </div>
 
-                        {/* Delete Button */}
-                        <div className="col-6 col-md-2 mt-4 mt-md-0 text-end pe-md-4">
-                          {/* ✨ CHANGED: Set default color to colorGold and hover color to colorCream */}
+                        {/* Delete Button - Shifted to col-md-2 */}
+                        <div className="col-4 col-md-2 text-end pe-md-4">
                           <motion.button whileHover={{ scale: 1.1, color: colorCream }} whileTap={{ scale: 0.9 }} onClick={() => removeItemHandler(item.product)} className="btn p-2" style={{ color: colorGold, border: "none", transition: 'all 0.3s ease' }}>
                             <i className="fa fa-trash-o fa-lg"></i>
                           </motion.button>
@@ -193,8 +198,8 @@ export default function Cart() {
               </motion.div>
 
               {/* --- RIGHT: ORDER SUMMARY (Dark Green Card) --- */}
-              <motion.div className="col-12 col-lg-4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-                <div className="p-4 p-md-5 shadow-lg" style={{ ...greenCardStyle, position: "sticky", top: "100px" }}>
+              <motion.div className="col-12 col-xl-3 col-lg-4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
+                <div className="p-4 p-md-5 shadow-lg" style={{ ...greenCardStyle, position: "sticky", top: "100px", width: '100%' }}>
                   {innerFrame}
                   
                   <div style={{ position: 'relative', zIndex: 1 }}>

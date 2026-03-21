@@ -1,4 +1,3 @@
-// src/slices/cartSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -27,7 +26,15 @@ const cartSlice = createSlice({
                 state.items.push(item);
             }
 
+            // Save to generic key for UI responsiveness
             localStorage.setItem("cartItems", JSON.stringify(state.items));
+            
+            // ✨ Keep user-specific key in sync so page refresh preserves the active cart
+            const userId = localStorage.getItem("activeUserId");
+            if (userId) {
+                localStorage.setItem(`cartItems_${userId}`, JSON.stringify(state.items));
+            }
+
             state.loading = false;
         },
         addCartItemFail(state, action) {
@@ -36,7 +43,16 @@ const cartSlice = createSlice({
         },
         removeItemFromCart(state, action) {
             const filterItems = state.items.filter(item => item.product !== action.payload);
+            
+            // Save to generic key
             localStorage.setItem('cartItems', JSON.stringify(filterItems));
+            
+            // ✨ Keep user-specific key in sync on deletion
+            const userId = localStorage.getItem("activeUserId");
+            if (userId) {
+                localStorage.setItem(`cartItems_${userId}`, JSON.stringify(filterItems));
+            }
+
             state.items = filterItems;
         },
         orderCompleted(state, action) {
@@ -52,7 +68,6 @@ const cartSlice = createSlice({
             state.shippingInfo = action.payload; 
             localStorage.setItem("shippingInfo", JSON.stringify(action.payload));
         },
-        // ✨ NEW: Restores a user's saved cart when they log in
         restoreUserCart(state, action) {
             const userId = action.payload;
             const savedCart = localStorage.getItem(`cartItems_${userId}`);
@@ -79,7 +94,7 @@ export const {
     removeItemFromCart,
     orderCompleted,
     saveShippingInfo,
-    restoreUserCart // ✨ Export the new action
+    restoreUserCart
 } = actions;
 
 export default reducer;

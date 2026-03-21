@@ -24,10 +24,17 @@ export const getProducts = async (req, res, next) => {
 export const newProduct = catchAsyncErrors(async (req, res, next) => {
 
   let images = [];
+  
+  // ✨ FIX: Set dynamic Base URL based on environment
+  let baseUrl = process.env.BACKEND_URL;
+  if (process.env.NODE_ENV === "production") {
+      baseUrl = `${req.protocol}://${req.get('host')}`;
+  }
+
   // Safely check if files exist before trying to loop through them
   if (req.files && req.files.length > 0) {
       req.files.forEach(file => {
-          let url = `${process.env.BACKEND_URL}/uploads/products/${file.filename}`;
+          let url = `${baseUrl}/uploads/products/${file.filename}`;
           images.push({ image: url });
       });
   }
@@ -78,9 +85,16 @@ export const updateProduct = catchAsyncErrors(async (req, res, next) => {
   if (req.body.imagesCleared === "false") {
     images = product.images; // Keep existing images if not cleared
   }  
+
+  // ✨ FIX: Set dynamic Base URL based on environment
+  let baseUrl = process.env.BACKEND_URL;
+  if (process.env.NODE_ENV === "production") {
+      baseUrl = `${req.protocol}://${req.get('host')}`;
+  }
+
   if (req.files && req.files.length > 0) {
       req.files.forEach(file => {
-          let url = `${process.env.BACKEND_URL}/uploads/products/${file.filename}`;
+          let url = `${baseUrl}/uploads/products/${file.filename}`;
           images.push({ image: url });
       });
       // Only overwrite images if new ones were actually uploaded
@@ -177,7 +191,7 @@ export const createReview = catchAsyncErrors(async (req, res, next) => {
 
 //Get Reviews - api/v1/reviews
 export const getReviews = catchAsyncErrors(async (req, res, next) => {
-  const product = await Product.findById(req.query.id);
+  const product = await Product.findById(req.query.id).populate("reviews.user", "name email");
 
   res.status(200).json({
     success: true,

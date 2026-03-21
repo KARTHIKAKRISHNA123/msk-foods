@@ -151,7 +151,10 @@ export const login = (email, password) => async (dispatch) => {
         const { data } = await axios.post('/api/v1/login', { email, password });
         dispatch(loginSuccess(data));
         
-        // ✨ RESTORE CART: Tell Redux to load this specific user's cart
+        // ✨ NEW: Track active user in LocalStorage so cartSlice can sync
+        localStorage.setItem("activeUserId", data.user._id);
+
+        // RESTORE CART: Tell Redux to load this specific user's cart
         dispatch(restoreUserCart(data.user._id));
 
     } catch (error) {
@@ -165,8 +168,9 @@ export const register = (userData) => async (dispatch) => {
         const { data } = await axios.post('/api/v1/register', userData);
         dispatch(registerSuccess(data));
         
-        // ✨ NEW REGISTRATION: They won't have a saved cart, but we still trigger the restore 
-        // to ensure the active 'cartItems' key is cleared of any ghost data.
+        // ✨ NEW: Track active user for newly registered accounts
+        localStorage.setItem("activeUserId", data.user._id);
+
         dispatch(restoreUserCart(data.user._id));
 
     } catch (error) {
@@ -180,7 +184,10 @@ export const loadUser = () => async (dispatch) => {
         const { data } = await axios.get('/api/v1/myprofile');
         dispatch(loadUserSuccess(data));
         
-        // ✨ RESTORE CART ON REFRESH: Ensures cart survives a page reload
+        // ✨ NEW: Track active user on refresh
+        localStorage.setItem("activeUserId", data.user._id);
+
+        // RESTORE CART ON REFRESH: Ensures cart survives a page reload
         dispatch(restoreUserCart(data.user._id));
 
     } catch (error) {
@@ -188,7 +195,7 @@ export const loadUser = () => async (dispatch) => {
     }
 };
 
-// ✨ THE MASTER LOGOUT: Save the cart, then destroy the active session
+// THE MASTER LOGOUT: Save the cart, then destroy the active session
 export const logout = () => async (dispatch, getState) => {
     try {
         // 1. Grab the user ID and Cart Items *before* we log out
@@ -206,6 +213,10 @@ export const logout = () => async (dispatch, getState) => {
         
         // 4. Wipe the active UI cart so the next user doesn't see it
         localStorage.removeItem('cartItems');
+
+        // ✨ NEW: Clear active user tracking
+        localStorage.removeItem('activeUserId'); 
+
         dispatch(orderCompleted()); // Re-using this to quickly wipe the Redux array
 
     } catch (error) {
@@ -252,6 +263,3 @@ export const resetPassword = (userData, token) => async (dispatch) => {
         dispatch(resetPasswordFail(error.response.data.message || error.message));
     }
 };
-
-
-

@@ -1,8 +1,9 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Dropdown, Image } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../slices/authSlice";
+
 
 export default function Header() {
   const { isAuthenticated, user } = useSelector((state) => state.authState);
@@ -10,6 +11,11 @@ export default function Header() {
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
+    const location = useLocation();
+
+
+    if (location.pathname.startsWith('/admin')) return null;
+
 
   const logoutHandler = () => {
     dispatch(logout());

@@ -4,17 +4,32 @@ import sendEmail from '../utils/email.js';
 import ErrorHandler from '../utils/errorHandler.js';
 import sendToken from '../utils/jwt.js';
 import crypto from 'crypto';
+import fs from 'fs'; 
+import path from 'path'; 
+import { fileURLToPath } from 'url'; // ✨ Added for ES Module compatibility
+
+// ✨ Safe __dirname declaration for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //Register a user - /api/v1/register
 export const registerUser = catchAsyncErrors(async(req, res, next) => {
     const { name, email, password } = req.body;
-    let avatar;
+  let avatar;
 
-    if (req.file) {
-        // ✨ FIXED: Use req.file.filename (Unique Name) instead of originalname
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
-    }
+  // 1. Set the default base URL from your .env file
+  let baseUrl = process.env.BACKEND_URL;
+
+  // 2. Override it dynamically only if in production
+  if (process.env.NODE_ENV === "production") {
+    baseUrl = `${req.protocol}://${req.get('host')}`;
+  }
+
+  // 3. Construct the avatar path
+  if (req.file) {
+    // FIXED: Use req.file.filename (Unique Name) instead of originalname
+    avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
+  }
 
     const user = await User.create({
         name,
@@ -72,8 +87,15 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     const resetToken = user.getResetToken();
     await user.save({ validateBeforeSave: false });
 
+    // ✨ FIX: Dynamic Frontend URL for the email link
+    let frontendUrl = process.env.FRONTEND_URL;
+    if (process.env.NODE_ENV === "production") {
+        // This ensures the email link points to your live AWS domain
+        frontendUrl = `${req.protocol}://${req.get('host')}`;
+    }
+
     //Create reset password url
-    const resetUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
+    const resetUrl = `${frontendUrl}/password/reset/${resetToken}`;
 
     const message = `Your password reset token is as follow:\n\n${resetUrl}\n\nIf you have not requested this email, then please ignore it.`;
 
@@ -98,7 +120,6 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 
-//Reset Password - /api/v1/password/reset/:token
 //Reset Password - /api/v1/password/reset/:token
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     // 1. Hash the token from the URL
@@ -168,22 +189,43 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         email: req.body.email
     };
 
-    // ✨ FIXED: Use req.file.filename here too for profile updates
     if (req.file) {
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        // PRO-TIP: Delete the old avatar from the server to save space
+        const user = await User.findById(req.user.id);
+        
+        // Check if the user already has an avatar and it's not a default web URL
+        if (user.avatar && user.avatar.includes('/uploads/user/')) {
+            // Extract just the filename from the old URL
+            const oldAvatarFilename = user.avatar.split('/').pop();
+            const oldAvatarPath = path.join(__dirname, `../../uploads/user/${oldAvatarFilename}`);
+            
+            // Delete the old file if it exists
+            if (fs.existsSync(oldAvatarPath)) {
+                fs.unlinkSync(oldAvatarPath);
+            }
+        }
+
+        // 1. Set the default base URL from your .env file
+        let baseUrl = process.env.BACKEND_URL;
+
+        // 2. Override it dynamically only if in production
+        if (process.env.NODE_ENV === "production") {
+            baseUrl = `${req.protocol}://${req.get('host')}`;
+        }
+
+        // 3. Construct the avatar path using the unique filename
         newUserData.avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
     }
 
-    const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, newUserData, {
         new: true,
         runValidators: true,
     });
 
     res.status(200).json({
         success: true,
-        user
+        user: updatedUser
     });
-
 });
 
 //Admin: Get All Users - /api/v1/admin/users
