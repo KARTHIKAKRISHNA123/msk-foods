@@ -15,21 +15,12 @@ const __dirname = path.dirname(__filename);
 //Register a user - /api/v1/register
 export const registerUser = catchAsyncErrors(async(req, res, next) => {
     const { name, email, password } = req.body;
-  let avatar;
+    let avatar;
 
-  // 1. Set the default base URL from your .env file
-  let baseUrl = process.env.BACKEND_URL;
-
-  // 2. Override it dynamically only if in production
-  if (process.env.NODE_ENV === "production") {
-    baseUrl = `${req.protocol}://${req.get('host')}`;
-  }
-
-  // 3. Construct the avatar path
-  // 3. Construct the avatar path using Relative Path
-  if (req.file) {
-    avatar = `/uploads/user/${req.file.filename}`;
-  }
+    // ✨ THE FIX: Construct the avatar path using a clean Relative Path
+    if (req.file) {
+        avatar = `/uploads/user/${req.file.filename}`;
+    }
 
     const user = await User.create({
         name,
@@ -126,7 +117,6 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     const resetPasswordToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
 
     // 2. Find user with that token AND check if it hasn't expired
-    // ✅ Uses 'resetPasswordTokenExpire' to match your User Model
     const user = await User.findOne({
         resetPasswordToken,
         resetPasswordTokenExpire: { $gt: Date.now() } 
@@ -141,7 +131,6 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     }
 
     // 3. Set new password
-    // Because of your pre('save') hook, this will be automatically hashed!
     user.password = req.body.password;
     
     // 4. Clear reset token fields so they can't be used again
@@ -183,7 +172,6 @@ export const changePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 //Update User Profile
-//Update User Profile
 export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     const newUserData = {
         name: req.body.name,
@@ -204,7 +192,6 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
         }
 
         // ✨ THE ULTIMATE FIX: Just use a relative path!
-        // No more fighting with BACKEND_URL or IP addresses.
         newUserData.avatar = `/uploads/user/${req.file.filename}`;
     }
 
