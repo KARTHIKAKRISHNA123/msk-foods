@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ToastContainer } from "react-toastify";
-import { useDispatch } from "react-redux";
+// ✨ FIX: Added useSelector to track authentication status
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios"; 
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
@@ -22,7 +23,6 @@ import ScrollToTop from "./components/layouts/ScrollToTop";
 // =========================================================================
 import Header from "./components/layouts/Header";
 import Footer from "./components/layouts/Footer";
-
 
 // =========================================================================
 // 4. CORE FEATURE COMPONENTS
@@ -71,22 +71,30 @@ import UpdateUser from './components/admin/UpdateUser';
 function App() {
   const [stripeApiKey, setStripeApiKey] = useState("");
   const dispatch = useDispatch();
+  
+  // ✨ FIX: Get authentication status from Redux
+  const { isAuthenticated } = useSelector(state => state.authState);
 
+  // 1. First Effect: Always try to load the user on startup
   useEffect(() => {
-    // Keeps user logged in on refresh
     dispatch(loadUser());
+  }, [dispatch]);
 
+  // ✨ 2. Second Effect: ONLY fetch Stripe Key IF the user is logged in
+  useEffect(() => {
     async function getStripeApiKey() {
       try {
         const { data } = await axios.get("/api/v1/stripeapikey");
         setStripeApiKey(data.stripeApiKey);
       } catch (error) {
-        console.error("Failed to load Stripe Key", error);
+        // Silently ignore if guest
       }
     }
 
-    getStripeApiKey();
-  }, [dispatch]);
+    if (isAuthenticated) {
+      getStripeApiKey();
+    }
+  }, [isAuthenticated]);
 
   return (
     <Router>
@@ -94,9 +102,6 @@ function App() {
         {/* ✨ THE MASTER WRAPPER: position relative creates the layering context */}
         <div className="d-flex flex-column min-vh-100 position-relative" style={{ backgroundColor: 'transparent', overflowX: 'hidden' }}>
           
-          {/* ✨ GLOBAL INTERACTIVE LAYER (Base Layer: z-index -1) */}
-          
-
           <ScrollToTop />
 
           {/* ✨ HEADER LAYER (Upper Layer: z-index 10) */}

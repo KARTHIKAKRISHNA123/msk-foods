@@ -22,7 +22,7 @@ export default function UpdateProfile() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // 1. Load User Data
+    // 1. Load User Data & Handle Notifications
     useEffect(() => {
         if(user) {
             setName(user.name);
@@ -32,13 +32,15 @@ export default function UpdateProfile() {
             }
         }
 
+        // ✨ FIX: Simplified Toast Logic to prevent race conditions
         if(isUpdated) {
-            toast('Profile Updated Successfully', {
-                type: 'success',
+            toast.success('Profile Updated Successfully', {
                 position: "top-center",
-                theme: "colored",
-                onOpen: () => dispatch(clearUpdateProfile())
+                theme: "colored"
             });
+            
+            // Clear the state and navigate immediately
+            dispatch(clearUpdateProfile());
             navigate('/myprofile');
             return;
         }
@@ -46,9 +48,9 @@ export default function UpdateProfile() {
         if(error) {
             toast.error(error, {
                 position: "top-center",
-                theme: "colored",
-                onOpen: ()=> { dispatch(clearError()) }
+                theme: "colored"
             });
+            dispatch(clearError());
             return;
         }
     }, [user, isUpdated, error, dispatch, navigate]);

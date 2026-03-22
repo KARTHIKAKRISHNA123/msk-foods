@@ -183,6 +183,7 @@ export const changePassword = catchAsyncErrors(async (req, res, next) => {
 });
 
 //Update User Profile
+//Update User Profile
 export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     const newUserData = {
         name: req.body.name,
@@ -190,30 +191,25 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     };
 
     if (req.file) {
-        // PRO-TIP: Delete the old avatar from the server to save space
         const user = await User.findById(req.user.id);
         
-        // Check if the user already has an avatar and it's not a default web URL
+        // PRO-TIP: Delete the old avatar from the server to save space
         if (user.avatar && user.avatar.includes('/uploads/user/')) {
-            // Extract just the filename from the old URL
             const oldAvatarFilename = user.avatar.split('/').pop();
-            const oldAvatarPath = path.join(__dirname, `../../uploads/user/${oldAvatarFilename}`);
             
-            // Delete the old file if it exists
+            // ✨ FIX 1: Corrected folder path to properly delete old images
+            const oldAvatarPath = path.join(__dirname, `../uploads/user/${oldAvatarFilename}`);
+            
             if (fs.existsSync(oldAvatarPath)) {
                 fs.unlinkSync(oldAvatarPath);
             }
         }
 
-        // 1. Set the default base URL from your .env file
-        let baseUrl = process.env.BACKEND_URL;
+        // ✨ FIX 2: Bulletproof AWS Public IP assignment
+        // This explicitly uses your BACKEND_URL from config.env, or grabs the AWS IP from the browser request
+        let baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
 
-        // 2. Override it dynamically only if in production
-        if (process.env.NODE_ENV === "production") {
-            baseUrl = `${req.protocol}://${req.get('host')}`;
-        }
-
-        // 3. Construct the avatar path using the unique filename
+        // Construct the avatar path using the unique filename
         newUserData.avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
     }
 
