@@ -26,9 +26,9 @@ export const registerUser = catchAsyncErrors(async(req, res, next) => {
   }
 
   // 3. Construct the avatar path
+  // 3. Construct the avatar path using Relative Path
   if (req.file) {
-    // FIXED: Use req.file.filename (Unique Name) instead of originalname
-    avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
+    avatar = `/uploads/user/${req.file.filename}`;
   }
 
     const user = await User.create({
@@ -193,11 +193,9 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     if (req.file) {
         const user = await User.findById(req.user.id);
         
-        // PRO-TIP: Delete the old avatar from the server to save space
+        // Delete the old avatar
         if (user.avatar && user.avatar.includes('/uploads/user/')) {
             const oldAvatarFilename = user.avatar.split('/').pop();
-            
-            // ✨ FIX 1: Corrected folder path to properly delete old images
             const oldAvatarPath = path.join(__dirname, `../uploads/user/${oldAvatarFilename}`);
             
             if (fs.existsSync(oldAvatarPath)) {
@@ -205,12 +203,9 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
             }
         }
 
-        // ✨ FIX 2: Bulletproof AWS Public IP assignment
-        // This explicitly uses your BACKEND_URL from config.env, or grabs the AWS IP from the browser request
-        let baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get('host')}`;
-
-        // Construct the avatar path using the unique filename
-        newUserData.avatar = `${baseUrl}/uploads/user/${req.file.filename}`;
+        // ✨ THE ULTIMATE FIX: Just use a relative path!
+        // No more fighting with BACKEND_URL or IP addresses.
+        newUserData.avatar = `/uploads/user/${req.file.filename}`;
     }
 
     const updatedUser = await User.findByIdAndUpdate(req.user.id, newUserData, {
