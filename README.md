@@ -237,7 +237,7 @@ Click the link below to open — all diagrams visible as tabs at the bottom.
 | 9 | Package Diagram | IEEE/OMG UML 2.x |
 
 ### Open Interactive Diagrams (all 9 tabs)
-[Click here to view all 9 UML diagrams](https://github.com/KARTHIKAKRISHNA123/Online_Retail_Inventory_And_Sales_Management_System/blob/main/diagrams/MSK_Foods.drawio)
+[Click here to view all 9 UML diagrams](https://app.diagrams.net/#HKARTHIKAKRISHNA123/Online_Retail_Inventory_And_Sales_Management_System/main/diagrams/MSK_Foods.drawio)
 
 > Switch between diagrams using the tab bar at the bottom of the viewer.
 
