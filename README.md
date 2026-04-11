@@ -219,6 +219,30 @@ The application follows Object-Oriented Software Engineering principles and comm
 
 ---
 
+## UML Diagrams — IEEE Standard
+
+All 9 UML diagrams are in a single interactive file.
+Click the link below to open — all diagrams visible as tabs at the bottom.
+
+| # | Diagram | Standard |
+|---|---|---|
+| 1 | Use Case Diagram | IEEE/OMG UML 2.x |
+| 2 | Class Diagram | IEEE/OMG UML 2.x |
+| 3 | Sequence Diagram | IEEE/OMG UML 2.x |
+| 4 | Communication Diagram | IEEE/OMG UML 2.x |
+| 5 | Activity Diagram | IEEE/OMG UML 2.x |
+| 6 | State Diagram | IEEE/OMG UML 2.x |
+| 7 | Component Diagram | IEEE/OMG UML 2.x |
+| 8 | Deployment Diagram | IEEE/OMG UML 2.x |
+| 9 | Package Diagram | IEEE/OMG UML 2.x |
+
+### Open Interactive Diagrams (all 9 tabs)
+[Click here to view all 9 UML diagrams](diagrams/MSK_Foods_UML.drawio)
+
+> Switch between diagrams using the tab bar at the bottom of the viewer.
+
+---
+
 ## Installation & Setup
 
 ### Prerequisites
