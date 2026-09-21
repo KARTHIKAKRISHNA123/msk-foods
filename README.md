@@ -667,12 +667,7 @@ The UML Deployment Diagram documents this topology. To deploy again, the same ap
 Full Stack Developer | MERN Stack  
 GitHub: [@KARTHIKAKRISHNA123](https://github.com/KARTHIKAKRISHNA123)
 
----
 
-## License
-
-This project is intended for educational and portfolio demonstration purposes.  
-All business logic, UI design, and architecture are original work by the author.
 
 ---
 
